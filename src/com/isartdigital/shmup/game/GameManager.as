@@ -4,17 +4,21 @@
 	import com.isartdigital.shmup.controller.ControllerKey;
 	import com.isartdigital.shmup.controller.ControllerPad;
 	import com.isartdigital.shmup.controller.ControllerTouch;
+	import com.isartdigital.shmup.game.layers.GameLayer;
+	import com.isartdigital.shmup.game.layers.ScrollingLayer;
 	import com.isartdigital.shmup.game.sprites.Player;
 	import com.isartdigital.shmup.ui.GameOver;
 	import com.isartdigital.shmup.ui.UIManager;
 	import com.isartdigital.shmup.ui.WinScreen;
 	import com.isartdigital.utils.Config;
 	import com.isartdigital.utils.Monitor;
+	import com.isartdigital.utils.game.GameObject;
     import com.isartdigital.utils.game.GameStage;
 	import com.isartdigital.utils.game.StateObject;
     import flash.display.Sprite;
 	import flash.events.Event;
     import flash.geom.Point;
+	import flash.utils.getDefinitionByName;
 	
 	/**
 	 * Manager (Singleton) en charge de gérer le déroulement d'une partie
@@ -41,6 +45,8 @@
         }
 
 		public function GameManager() { }
+		
+		
 
 		public static function start(): void {
 			// Lorsque la partie démarre, le type de controleur déterminé est actionné
@@ -59,8 +65,35 @@
 			UIManager.startGame();
 			
 			// TODO: votre code d'initialisation commence ici
-            
-            //Player.getInstance().resume();
+			var lBackground1Class: Class = getDefinitionByName("Background1") as Class;			
+			var lBackground2Class: Class = getDefinitionByName("Background2") as Class;
+			var lForegroundClass : Class = getDefinitionByName("Foreground") as Class;
+			
+			
+			background1 = new lBackground1Class();
+			background2 = new lBackground2Class();
+			foreground= new lForegroundClass();
+			
+			var lGameStage : GameStage = GameStage.getInstance();
+			
+			lGameStage.getGameContainer().addChild(background1);
+			lGameStage.getGameContainer().addChild(background2);
+			lGameStage.getGameContainer().addChild(GameLayer.getInstance());
+			lGameStage.getGameContainer().addChild(foreground);
+			
+			GameLayer.getInstance().addChild(Player.getInstance());
+			
+			var lGlobalPlayerPosition: Point = new Point(Config.stage.stageWidth / 3, Config.stage.stageHeight / 2 );
+			var lPlayerPostion: Point = GameLayer.getInstance().globalToLocal(lGlobalPlayerPosition);
+			
+			Player.getInstance().x =  lPlayerPostion.x
+			Player.getInstance().y = lPlayerPostion.y;
+			
+            Player.getInstance().start();
+			GameLayer.getInstance().start();
+			background1.start();
+			background2.start();
+			foreground.start();
             
 			resume();
 		}
@@ -102,6 +135,12 @@
 		 */
 		protected static function gameLoop (pEvent:Event): void {
 			// TODO: votre code de gameloop commence ici
+			background1.doAction();
+			background2.doAction();
+			foreground.doAction();
+			
+			Player.getInstance().doAction();
+			GameLayer.getInstance().doAction();
 		}
 
 		public static function gameOver ():void {
