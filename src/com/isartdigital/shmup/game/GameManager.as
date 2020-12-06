@@ -26,6 +26,9 @@
 		 * jeu en pause ou non
 		 */
 		protected static var isPause:Boolean = true;
+		public static var background1: ScrollingLayer;
+		public static var background2: ScrollingLayer;
+		public static var foreground: ScrollingLayer;
 		
 		/**
 		 * controlleur
@@ -39,7 +42,7 @@
 
 		public function GameManager() { }
 
-		public static function start (): void {
+		public static function start(): void {
 			// Lorsque la partie démarre, le type de controleur déterminé est actionné
 			if (Controller.type == Controller.PAD) 
                 _controller = ControllerPad.getInstance();

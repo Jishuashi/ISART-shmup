@@ -13,12 +13,25 @@ package com.isartdigital.shmup.game.layers
 		 * instance unique de la classe GameLayer
 		 */
 		protected static var instance: GameLayer;
-
+		
+		private var _speed : int = -10;
+		
+		public function get speed():int 
+		{
+			return _speed;
+		}
+		
+		
 		public function GameLayer() 
 		{
 			super();
 		}
 		
+		override protected function doActionNormal():void 
+		{
+			super.doActionNormal();
+			x += _speed;
+		}
 		/**s
 		 * Retourne l'instance unique de la classe, et la crée si elle n'existait pas au préalable
 		 * @return instance unique

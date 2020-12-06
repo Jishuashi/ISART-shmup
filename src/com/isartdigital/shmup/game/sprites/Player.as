@@ -5,6 +5,7 @@
 	import com.isartdigital.shmup.controller.ControllerPad;
 	import com.isartdigital.shmup.controller.ControllerTouch;
     import com.isartdigital.shmup.game.GameManager;
+	import com.isartdigital.shmup.game.layers.GameLayer;
     import com.isartdigital.utils.game.ColliderType;
 	import com.isartdigital.utils.game.StateObject;
 	
@@ -29,12 +30,18 @@
 		/**
 		 * vitesse du joueur
 		 */
-		protected var speed:Number = 25;
+		protected var speed:Number = 2;
 		
 		public function Player() 
 		{
 			super();
             controller = GameManager.controller;
+		}
+		
+		override protected function doActionNormal():void 
+		{
+			super.doActionNormal();
+			x -= GameLayer.getInstance().speed;
 		}
 		
 		/**
