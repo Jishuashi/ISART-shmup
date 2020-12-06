@@ -72,7 +72,11 @@
 			
 			background1 = new lBackground1Class();
 			background2 = new lBackground2Class();
-			foreground= new lForegroundClass();
+			foreground = new lForegroundClass();
+			
+			background1.paralaxRatio = 0.4;
+			background2.paralaxRatio = 0.7;
+			foreground.paralaxRatio = 1.3;
 			
 			var lGameStage : GameStage = GameStage.getInstance();
 			

@@ -14,10 +14,18 @@ package com.isartdigital.shmup.game.layers
 	public class ScrollingLayer extends GameObject
 	{
 		protected var _screenLimits:Rectangle = new Rectangle();
+		public var paralaxRatio : Number = 1;
 		
 		public function ScrollingLayer() 
 		{
 			super();
+		}
+		
+		override protected function doActionNormal():void 
+		{
+			super.doActionNormal();
+			x += GameLayer.getInstance().speed * paralaxRatio;
+			
 		}
 
 		protected function updateScreenLimits ():void {

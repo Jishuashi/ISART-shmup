@@ -29,7 +29,6 @@ package com.isartdigital.shmup.game.layers
 		
 		override protected function doActionNormal():void 
 		{
-			super.doActionNormal();
 			x += _speed;
 		}
 		/**s
