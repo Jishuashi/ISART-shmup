@@ -5,6 +5,7 @@
 	import com.isartdigital.shmup.controller.ControllerPad;
 	import com.isartdigital.shmup.controller.ControllerTouch;
 	import com.isartdigital.shmup.game.layers.GameLayer;
+	import com.isartdigital.shmup.game.layers.InfiniteLayer;
 	import com.isartdigital.shmup.game.layers.ScrollingLayer;
 	import com.isartdigital.shmup.game.sprites.Player;
 	import com.isartdigital.shmup.ui.GameOver;
@@ -30,9 +31,9 @@
 		 * jeu en pause ou non
 		 */
 		protected static var isPause:Boolean = true;
-		public static var background1: ScrollingLayer;
-		public static var background2: ScrollingLayer;
-		public static var foreground: ScrollingLayer;
+		public static var background1: InfiniteLayer;
+		public static var background2: InfiniteLayer;
+		public static var foreground: InfiniteLayer;
 		
 		/**
 		 * controlleur
@@ -98,6 +99,7 @@
 			background1.start();
 			background2.start();
 			foreground.start();
+			
             
 			resume();
 		}

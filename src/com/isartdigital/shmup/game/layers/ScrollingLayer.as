@@ -3,6 +3,7 @@ package com.isartdigital.shmup.game.layers
 	import com.isartdigital.utils.Config;
 	import com.isartdigital.utils.game.GameObject;
 	import com.isartdigital.utils.game.GameStage;
+	import flash.display.MovieClip;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
@@ -16,17 +17,24 @@ package com.isartdigital.shmup.game.layers
 		protected var _screenLimits:Rectangle = new Rectangle();
 		public var paralaxRatio : Number = 1;
 		
+		
 		public function ScrollingLayer() 
 		{
 			super();
+			
+			
 		}
 		
 		override protected function doActionNormal():void 
 		{
+			//var lIndex = : int = 0;
+			
 			super.doActionNormal();
 			x += GameLayer.getInstance().speed * paralaxRatio;
 			
-		}
+			updateScreenLimits();
+		}	
+		
 
 		protected function updateScreenLimits ():void {
 			var lTopLeft:Point     = new Point (0, 0);
