@@ -30,7 +30,7 @@
 		/**
 		 * vitesse du joueur
 		 */
-		protected var speed:Number = 2;
+		protected var speed:Number = 25;
 		
 		public function Player() 
 		{
@@ -41,7 +41,42 @@
 		override protected function doActionNormal():void 
 		{
 			super.doActionNormal();
-			x -= GameLayer.getInstance().speed;
+			
+			var lHorizontal : Number = controller.right - controller.left;
+			var lVertical : Number = controller.down - controller.up;
+			
+			var lHypotenus : Number = Math.sqrt(lHorizontal *  lHorizontal +  lVertical * lVertical);
+			
+			if (lHypotenus > 1)
+			{
+				lHorizontal /= lHypotenus;
+				lVertical /= lHypotenus;
+			}
+			
+			if (lVertical == 0 && lHorizontal == 0)
+			{
+				setState("default");
+			}
+			else if (lVertical == 0 && lHorizontal == 1)
+			{
+				setState("right");
+			}
+			else if (lVertical == 1 && lHorizontal == 0)
+			{
+				setState("down");
+			}
+			else if (lVertical == -1 && lHorizontal == 0)
+			{
+				setState("up");
+			}
+			else if (lVertical == 0 && lHorizontal == -1)
+			{
+				setState("left");
+			}
+			
+			x -= GameLayer.getInstance().speed;			
+			x += lHorizontal * speed;
+			y += lVertical * speed;
 		}
 		
 		/**
