@@ -40,7 +40,6 @@
 		
 		override protected function doActionNormal():void 
 		{
-			super.doActionNormal();
 			
 			var lHorizontal : Number = controller.right - controller.left;
 			var lVertical : Number = controller.down - controller.up;

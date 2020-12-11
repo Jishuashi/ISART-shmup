@@ -3,9 +3,11 @@ package com.isartdigital.shmup.game.layers
 	import com.isartdigital.utils.Config;
 	import com.isartdigital.utils.game.GameObject;
 	import com.isartdigital.utils.game.GameStage;
+	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	
 	
 	/**
 	 * Classe "Plan", chaque plan (y compris le GameLayer) est une instance de Layer ou d'une classe fille de Layer
@@ -15,14 +17,30 @@ package com.isartdigital.shmup.game.layers
 	public class ScrollingLayer extends GameObject
 	{
 		protected var _screenLimits:Rectangle = new Rectangle();
+		public var target : DisplayObject;
 		public var paralaxRatio : Number = 1;
+		public var children : Vector.<DisplayObject> = new Vector.<flash.display.DisplayObject>();
+		protected var nbChild : int;
 		
 		
 		public function ScrollingLayer() 
 		{
 			super();
+			nbChild = numChildren;
+			for (var i:int = 0; i < nbChild; i++) 
+			{
+				children.push(getChildAt(i));
+			}
 			
+			children.sort(compareByPosition);
+			trace(children);
 			
+		}
+		
+		public function init(pRatio : Number , pTarget : DisplayObject):void 
+		{
+			target = pTarget;
+			paralaxRatio = pRatio;
 		}
 		
 		override protected function doActionNormal():void 
@@ -30,10 +48,19 @@ package com.isartdigital.shmup.game.layers
 			//var lIndex = : int = 0;
 			
 			super.doActionNormal();
-			x += GameLayer.getInstance().speed * paralaxRatio;
+			x = target.x * paralaxRatio;
 			
 			updateScreenLimits();
 		}	
+		
+		protected function compareByPosition (pA:MovieClip , pB:MovieClip):Number 
+		{
+			var lResult : Number = 0;
+			
+			lResult = pA.x < pB.x ?  -1 : 1;
+			
+			return lResult;
+		}
 		
 
 		protected function updateScreenLimits ():void {

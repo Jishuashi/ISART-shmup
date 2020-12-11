@@ -13,8 +13,11 @@ package com.isartdigital.shmup.game.layers
 		public function InfiniteLayer() 
 		{
 			super();
-			for (var i:int = 0; i < numChildren; i++) 
+			nbChild = numChildren;
+			
+			for (var i:int = 0; i < nbChild; i++) 
 			{
+				
 				childList.push(getChildAt(i));
 			}
 			
@@ -31,17 +34,7 @@ package com.isartdigital.shmup.game.layers
 				childList[0].x += 3 * WIDTH_PART;
 				childList.push(childList.shift());
 			}
-		}
-		
-		private function compareByPosition (pA:MovieClip , pB:MovieClip):Number 
-		{
-			var lResult : Number = 0;
-			
-			lResult = pA.x < pB.x ?  -1 : 1;
-			
-			return lResult;
-		}
-		
+		}		
 		
 	}
 

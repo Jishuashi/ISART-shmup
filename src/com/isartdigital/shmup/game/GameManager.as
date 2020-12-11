@@ -69,15 +69,14 @@
 			var lBackground1Class: Class = getDefinitionByName("Background1") as Class;			
 			var lBackground2Class: Class = getDefinitionByName("Background2") as Class;
 			var lForegroundClass : Class = getDefinitionByName("Foreground") as Class;
-			
-			
+		
 			background1 = new lBackground1Class();
 			background2 = new lBackground2Class();
 			foreground = new lForegroundClass();
 			
-			background1.paralaxRatio = 0.4;
-			background2.paralaxRatio = 0.7;
-			foreground.paralaxRatio = 1.3;
+			background1.init(0.4, GameLayer.getInstance());
+			background2.init(0.7, GameLayer.getInstance())
+			foreground.init(1.3, GameLayer.getInstance())
 			
 			var lGameStage : GameStage = GameStage.getInstance();
 			
@@ -85,6 +84,7 @@
 			lGameStage.getGameContainer().addChild(background2);
 			lGameStage.getGameContainer().addChild(GameLayer.getInstance());
 			lGameStage.getGameContainer().addChild(foreground);
+			
 			
 			GameLayer.getInstance().addChild(Player.getInstance());
 			
