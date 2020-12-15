@@ -8,6 +8,8 @@
 	import com.isartdigital.shmup.game.layers.GameLayer;
     import com.isartdigital.utils.game.ColliderType;
 	import com.isartdigital.utils.game.StateObject;
+	import flash.display.MovieClip;
+	import flash.utils.getDefinitionByName;
 	
 	/**
 	 * Classe du joueur (Singleton)
@@ -31,11 +33,19 @@
 		 * vitesse du joueur
 		 */
 		protected var speed:Number = 25;
+		private var mcWeapon: MovieClip;
+		private var weapon : MovieClip;
+		private var playerCollider : MovieClip;
+		protected var weaponPlayerNextLevel: MovieClip; 
+		private var  weaponPlayer: MovieClip;
+		private  var weapon0Class: Class;
 		
 		public function Player() 
 		{
 			super();
+			
             controller = GameManager.controller;
+			collider = MovieClip(getChildAt(1));
 		}
 		
 		override protected function doActionNormal():void 
@@ -73,10 +83,40 @@
 				setState("left");
 			}
 			
+			weaponPlayerNextLevel = MovieClip(renderer.getChildAt(0)).mcWeapon;
+			
+			
+			if (weaponPlayerNextLevel != weaponPlayer)
+			{
+				weaponPlayer = weaponPlayerNextLevel;
+				weaponPlayer.addChild(weapon);
+				weapon.stop();
+			}
+			
+			
+			
 			x -= GameLayer.getInstance().speed;			
 			x += lHorizontal * speed;
 			y += lVertical * speed;
 		}
+		
+		public function doShoot():void 
+		{
+			
+			
+			
+		}
+		
+		override public function start():void 
+		{
+			super.start();
+			weaponPlayer = MovieClip(renderer.getChildAt(0)).mcWeapon;
+			weapon0Class = getDefinitionByName("Weapon" + 0) as Class;
+			weapon = new weapon0Class();
+			weaponPlayer.addChild(weapon);	
+			weapon.stop();
+		}
+		
 		
 		/**
 		 * Retourne l'instance unique de la classe, et la crée si elle n'existait pas au préalable

@@ -16,6 +16,7 @@
 	import com.isartdigital.utils.game.GameObject;
     import com.isartdigital.utils.game.GameStage;
 	import com.isartdigital.utils.game.StateObject;
+	import flash.display.MovieClip;
     import flash.display.Sprite;
 	import flash.events.Event;
     import flash.geom.Point;
@@ -34,6 +35,8 @@
 		public static var background1: InfiniteLayer;
 		public static var background2: InfiniteLayer;
 		public static var foreground: InfiniteLayer;
+		
+		
 		
 		/**
 		 * controlleur
@@ -75,16 +78,15 @@
 			foreground = new lForegroundClass();
 			
 			background1.init(0.4, GameLayer.getInstance());
-			background2.init(0.7, GameLayer.getInstance())
-			foreground.init(1.3, GameLayer.getInstance())
+			background2.init(0.7, GameLayer.getInstance());
+			foreground.init(1.3, GameLayer.getInstance());
 			
 			var lGameStage : GameStage = GameStage.getInstance();
 			
 			lGameStage.getGameContainer().addChild(background1);
 			lGameStage.getGameContainer().addChild(background2);
 			lGameStage.getGameContainer().addChild(GameLayer.getInstance());
-			lGameStage.getGameContainer().addChild(foreground);
-			
+			lGameStage.getGameContainer().addChild(foreground);	
 			
 			GameLayer.getInstance().addChild(Player.getInstance());
 			
