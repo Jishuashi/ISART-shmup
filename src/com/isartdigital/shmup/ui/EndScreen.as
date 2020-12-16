@@ -1,8 +1,10 @@
 package com.isartdigital.shmup.ui 
 {
 	import com.isartdigital.utils.ui.Screen;
+	import com.isartdigital.utils.ui.UIPosition;
 	import flash.display.SimpleButton;
 	import flash.display.Sprite;
+	import flash.events.Event;
 	
 	/**
 	 * Classe mère des écrans de fin
@@ -19,6 +21,12 @@ package com.isartdigital.shmup.ui
 		public function EndScreen() 
 		{
 			super();
+		}
+		
+		override protected function onResize(pEvent:Event = null):void 
+		{
+			super.onResize(pEvent);
+			UIManager.setPosition(mcBackground,UIPosition.FIT_SCREEN);			
 		}
 	}
 }

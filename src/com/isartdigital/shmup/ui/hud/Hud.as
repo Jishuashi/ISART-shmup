@@ -1,9 +1,12 @@
 package com.isartdigital.shmup.ui.hud 
 {
 	import com.isartdigital.shmup.controller.Controller;
+	import com.isartdigital.shmup.ui.UIManager;
 	import com.isartdigital.utils.Config;
 	import com.isartdigital.utils.ui.Screen;
+	import com.isartdigital.utils.ui.UIPosition;
 	import flash.display.MovieClip;
+	import flash.events.Event;
 	import flash.text.TextField;
 	
 	/**
@@ -42,6 +45,13 @@ package com.isartdigital.shmup.ui.hud
 		public static function getInstance (): Hud {
 			if (instance == null) instance = new Hud();
 			return instance;
+		}
+		
+		override protected function onResize(pEvent:Event = null):void 
+		{
+			super.onResize(pEvent);
+			UIManager.setPosition(mcTopCenter, UIPosition.TOP, 0, 10);
+			if(mcBottomRight != null) UIManager.setPosition(mcBottomRight, UIPosition.BOTTOM_RIGHT, 35);
 		}
 
 		/**

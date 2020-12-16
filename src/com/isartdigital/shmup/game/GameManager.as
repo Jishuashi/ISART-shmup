@@ -7,7 +7,10 @@
 	import com.isartdigital.shmup.game.layers.GameLayer;
 	import com.isartdigital.shmup.game.layers.InfiniteLayer;
 	import com.isartdigital.shmup.game.layers.ScrollingLayer;
+	import com.isartdigital.shmup.game.levelDesign.EnemyGenerator;
+	import com.isartdigital.shmup.game.sprites.Enemy;
 	import com.isartdigital.shmup.game.sprites.Player;
+	import com.isartdigital.shmup.game.sprites.ShotPlayer;
 	import com.isartdigital.shmup.ui.GameOver;
 	import com.isartdigital.shmup.ui.UIManager;
 	import com.isartdigital.shmup.ui.WinScreen;
@@ -100,7 +103,7 @@
 			GameLayer.getInstance().start();
 			background1.start();
 			background2.start();
-			foreground.start();
+			foreground.start();		
 			
             
 			resume();
@@ -149,6 +152,9 @@
 			
 			Player.getInstance().doAction();
 			GameLayer.getInstance().doAction();
+			ShotPlayer.doActionNormalShot();
+			Enemy.doActionEnemy();
+			
 		}
 
 		public static function gameOver ():void {

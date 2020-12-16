@@ -1,5 +1,7 @@
 package com.isartdigital.shmup.ui 
 {
+	import com.isartdigital.utils.ui.UIPosition;
+	import flash.events.Event;
 	/**
 	 * Ecran de Victoire (Singleton)
 	 * @author Mathieu ANTHOINE

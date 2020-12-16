@@ -1,6 +1,8 @@
 package com.isartdigital.shmup.ui 
 {
+	import com.isartdigital.utils.ui.UIPosition;
 	import flash.display.SimpleButton;
+	import flash.events.Event;
 	/**
 	 * Classe Game OVer (Singleton)
 	 * @author Mathieu ANTHOINE
@@ -26,6 +28,12 @@ package com.isartdigital.shmup.ui
 		public static function getInstance (): GameOver {
 			if (instance == null) instance = new GameOver();
 			return instance;
+		}
+		
+		override protected function onResize(pEvent:Event = null):void 
+		{
+			super.onResize(pEvent);
+			UIManager.setPosition(mcBackground,UIPosition.FIT_SCREEN);			
 		}
 
 		/**

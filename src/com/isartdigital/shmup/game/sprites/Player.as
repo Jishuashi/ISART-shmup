@@ -1,15 +1,22 @@
-﻿package com.isartdigital.shmup.game.sprites 
+﻿package com.isartdigital.shmup.game.sprites
 {
 	import com.isartdigital.shmup.controller.Controller;
 	import com.isartdigital.shmup.controller.ControllerKey;
 	import com.isartdigital.shmup.controller.ControllerPad;
 	import com.isartdigital.shmup.controller.ControllerTouch;
-    import com.isartdigital.shmup.game.GameManager;
+	import com.isartdigital.shmup.game.GameManager;
 	import com.isartdigital.shmup.game.layers.GameLayer;
-    import com.isartdigital.utils.game.ColliderType;
+	import com.isartdigital.utils.Config;
+	import com.isartdigital.utils.Monitor;
+	import com.isartdigital.utils.game.ColliderType;
+	import com.isartdigital.utils.game.GameStage;
 	import com.isartdigital.utils.game.StateObject;
 	import flash.display.MovieClip;
+	import flash.events.Event;
+	import flash.geom.Point;
 	import flash.utils.getDefinitionByName;
+	import flash.utils.getQualifiedClassName;
+	import utils.math.MathTools;
 	
 	/**
 	 * Classe du joueur (Singleton)
@@ -22,39 +29,49 @@
 		/**
 		 * instance unique de la classe Player
 		 */
-		protected static var instance: Player;
+		protected static var instance:Player;
 		
 		/**
 		 * controleur de jeu
 		 */
-		protected var controller: Controller;
+		protected var controller:Controller;
 		
 		/**
 		 * vitesse du joueur
 		 */
-		protected var speed:Number = 25;
-		private var mcWeapon: MovieClip;
-		private var weapon : MovieClip;
-		private var playerCollider : MovieClip;
-		protected var weaponPlayerNextLevel: MovieClip; 
-		private var  weaponPlayer: MovieClip;
-		private  var weapon0Class: Class;
+		public static var nbOfCannon:int = 1;
+		protected var speed:Number = 10;
+		public static var weaponLevel:int = 2;
+		private var mcWeapon:MovieClip;
+		private var weapon:MovieClip;
+		public static var playerCollider:MovieClip;
+		protected var weaponPlayerNextLevel:MovieClip;
+		private var weaponPlayer:MovieClip;
+		private var weaponClass:Class;
+		private var indexShotAsset:int = 0;
+		private var waitingTime:int = 5;
+		private var countFrame:int = 0;
 		
-		public function Player() 
+		public function Player()
 		{
 			super();
 			
-            controller = GameManager.controller;
-			collider = MovieClip(getChildAt(1));
+			
+			controller = GameManager.controller;
+			playerCollider = MovieClip(getChildAt(1));
+			scaleX = scaleY = 0.8;
+			
+			
+		
 		}
 		
-		override protected function doActionNormal():void 
+		override protected function doActionNormal():void
 		{
 			
-			var lHorizontal : Number = controller.right - controller.left;
-			var lVertical : Number = controller.down - controller.up;
+			var lHorizontal:Number = controller.right - controller.left;
+			var lVertical:Number = controller.down - controller.up;
 			
-			var lHypotenus : Number = Math.sqrt(lHorizontal *  lHorizontal +  lVertical * lVertical);
+			var lHypotenus:Number = Math.sqrt(lHorizontal * lHorizontal + lVertical * lVertical);
 			
 			if (lHypotenus > 1)
 			{
@@ -85,6 +102,7 @@
 			
 			weaponPlayerNextLevel = MovieClip(renderer.getChildAt(0)).mcWeapon;
 			
+			doShot();
 			
 			if (weaponPlayerNextLevel != weaponPlayer)
 			{
@@ -93,47 +111,148 @@
 				weapon.stop();
 			}
 			
-			
-			
-			x -= GameLayer.getInstance().speed;			
+			x -= GameLayer.getInstance().speed;
 			x += lHorizontal * speed;
 			y += lVertical * speed;
 		}
 		
-		public function doShoot():void 
+		public function doShot():void
 		{
 			
+			var lShot:ShotPlayer
+			var lPosition:Point;
+			var lRadian:Number;
+			var lVelocity:Point
 			
-			
+			if (controller.fire)
+			{
+				switch (weaponLevel)
+				{
+				case 0: 
+					if (countFrame++ >= waitingTime)
+					{
+						nbOfCannon = 1;
+						
+						lShot = new ShotPlayer("ShotPlayer" + indexShotAsset);
+						lPosition = parent.globalToLocal(parent.localToGlobal(new Point(playerCollider.mcWeapon0.x, playerCollider.mcWeapon0.y)));
+						lRadian = playerCollider.getChildByName("mcWeapon" + i).rotation * MathTools.DEG2RAD;
+						lVelocity = new Point(Math.cos(lRadian) * ShotPlayer.SHOT_SPEED, Math.sin(lRadian) * ShotPlayer.SHOT_SPEED);
+						
+						lShot.x = lPosition.x;
+						lShot.y = lPosition.y;
+						
+						lShot.rotation = playerCollider.getChildByName("mcWeapon" + i).rotation;
+						
+						lShot.scaleX = lShot.scaleY = 0.3;
+						
+						lShot.cacheAsBitmap = true;
+						
+						ShotPlayer.shotList.push(lShot);
+						ShotPlayer.shotVelocities.push(lVelocity);
+						
+						parent.addChild(lShot);
+						countFrame = 0;
+					}
+					break;
+				case 1:
+					
+					if (countFrame++ >= waitingTime)
+					{
+						
+						for (var i:int = 0; i < nbOfCannon; i++)
+						{
+							nbOfCannon = 3;
+							
+							lShot = new ShotPlayer("ShotPlayer" + indexShotAsset);
+							lPosition = Config.stage.globalToLocal(Player.getInstance().localToGlobal(new Point(playerCollider.getChildByName("mcWeapon" + i).x, playerCollider.getChildByName("mcWeapon" + i).y)));
+							lRadian = playerCollider.getChildByName("mcWeapon" + i).rotation * MathTools.DEG2RAD;
+							lVelocity = new Point(Math.cos(lRadian) * ShotPlayer.SHOT_SPEED, Math.sin(lRadian) * ShotPlayer.SHOT_SPEED);
+							
+							lShot.x = lPosition.x;
+							lShot.y = lPosition.y;
+							
+							lShot.rotation = playerCollider.getChildByName("mcWeapon" + i).rotation;
+							
+							lShot.cacheAsBitmap = true;
+							
+							lShot.scaleX = lShot.scaleY = 0.3;
+							
+							ShotPlayer.shotList.push(lShot);
+							ShotPlayer.shotVelocities.push(lVelocity);
+							
+							Config.stage.addChild(lShot);
+							countFrame = 0;
+						}
+					}
+					break;
+				case 2:
+					if (countFrame++ >= waitingTime)
+					{
+						
+						for (var f:int = 0; f < nbOfCannon; f++)
+						{
+							nbOfCannon = 5;
+							
+							lShot = new ShotPlayer("ShotPlayer" + indexShotAsset);
+							lPosition = Config.stage.globalToLocal(Player.getInstance().localToGlobal(new Point(playerCollider.getChildByName("mcWeapon" + f).x, playerCollider.getChildByName("mcWeapon" + f).y)));
+							lRadian = playerCollider.getChildByName("mcWeapon" + f).rotation * MathTools.DEG2RAD;
+							lVelocity = new Point(Math.cos(lRadian) * ShotPlayer.SHOT_SPEED, Math.sin(lRadian) * ShotPlayer.SHOT_SPEED);
+							
+							lShot.x = lPosition.x;
+							lShot.y = lPosition.y;
+							
+							lShot.rotation = playerCollider.getChildByName("mcWeapon" + f).rotation;
+							
+							lShot.scaleX = lShot.scaleY = 0.3;
+							
+							lShot.cacheAsBitmap = true;
+							
+							ShotPlayer.shotList.push(lShot);
+							ShotPlayer.shotVelocities.push(lVelocity);
+							
+							Config.stage.addChild(lShot);
+							countFrame = 0;
+						}
+					}
+					break;
+					
+				}
+				
+			}
 		}
 		
-		override public function start():void 
+		override public function start():void
 		{
 			super.start();
+			
 			weaponPlayer = MovieClip(renderer.getChildAt(0)).mcWeapon;
-			weapon0Class = getDefinitionByName("Weapon" + 0) as Class;
-			weapon = new weapon0Class();
-			weaponPlayer.addChild(weapon);	
+			weaponClass = getDefinitionByName("Weapon" + weaponLevel) as Class;
+			weapon = new weaponClass();
+			weaponPlayer.addChild(weapon);
 			weapon.stop();
 		}
 		
+		
+	
 		
 		/**
 		 * Retourne l'instance unique de la classe, et la crée si elle n'existait pas au préalable
 		 * @return instance unique
 		 */
-		public static function getInstance (): Player {
+		public static function getInstance():Player
+		{
 			if (instance == null) instance = new Player();
 			return instance;
 		}
-
+		
 		/**
 		 * détruit l'instance unique et met sa référence interne à null
 		 */
-		override public function destroy (): void {
+		override public function destroy():void
+		{
 			instance = null;
 			super.destroy();
 		}
-
+	
 	}
 }

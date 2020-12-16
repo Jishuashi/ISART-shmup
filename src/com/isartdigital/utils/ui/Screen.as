@@ -25,7 +25,6 @@ package com.isartdigital.utils.ui {
 		protected function init (pEvent:Event):void {
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			Config.stage.addEventListener(Event.RESIZE, onResize);
-			onResize();
 		}
 		
 		/**
