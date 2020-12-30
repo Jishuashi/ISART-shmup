@@ -11,6 +11,8 @@ package com.isartdigital.shmup.game.sprites
 		{
 			super(pAsset);
 			nbOfCanon = 1;
+			nbOfLife = 1;
+			scoreValue = 100;
 		}
 		
 	}

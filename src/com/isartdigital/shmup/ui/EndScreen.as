@@ -5,6 +5,7 @@ package com.isartdigital.shmup.ui
 	import flash.display.SimpleButton;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.text.TextField;
 	
 	/**
 	 * Classe mère des écrans de fin
@@ -15,12 +16,14 @@ package com.isartdigital.shmup.ui
 		
 		public var mcBackground:Sprite;
 		public var mcScore:Sprite;
+		public var txtScore: TextField ;
 		
 		public var btnNext:SimpleButton;
 	
 		public function EndScreen() 
 		{
 			super();
+			txtScore = mcScore.getChildByName("txtScore") as TextField;
 		}
 		
 		override protected function onResize(pEvent:Event = null):void 

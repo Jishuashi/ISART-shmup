@@ -3,6 +3,7 @@ package com.isartdigital.shmup.game.sprites
 	import com.greensock.easing.Power0;
 	import com.isartdigital.shmup.game.layers.GameLayer;
 	import com.isartdigital.shmup.game.levelDesign.EnemyGenerator;
+	import com.isartdigital.shmup.ui.hud.Hud;
 	import com.isartdigital.utils.Config;
 	import com.isartdigital.utils.game.StateObject;
 	import flash.display.MovieClip;
@@ -22,9 +23,11 @@ package com.isartdigital.shmup.game.sprites
 		protected static var indexShotAsset:int = 0;
 		public static var list:Vector.<Enemy> = new Vector.<Enemy>();
 		protected var nbOfCanon:int = 1;
-		protected var waitingTime:int = 30;
+		protected var scoreValue: int ;
+		protected var waitingTime:int = 60;
 		protected var countFrame:int = 0;
 		protected var speed:int = 5;
+		protected var nbOfLife:int;
 		protected var durationInFrame:int;
 		protected var enemyCollider:MovieClip;
 		
@@ -40,8 +43,29 @@ package com.isartdigital.shmup.game.sprites
 			super.doActionNormal();
 			
 			doShotNormal();
-			if (list.length == 0) return;
+		}
 		
+		public function doActionHurt():void
+		{
+			setState("hurt");
+			
+			if (isAnimEnd())
+			{
+				setState("default")
+				doAction = doActionNormal;
+			}
+		}
+		
+		public function doExplosion():void 
+		{
+			setState("explosion");
+			
+			if (isAnimEnd())
+			{
+				Hud.getInstance().totalScore += scoreValue;
+				Hud.getInstance().score.text = "Score :" + Hud.getInstance().totalScore;
+				destroy();
+			}
 		}
 		
 		protected function doShotNormal():void
@@ -50,7 +74,6 @@ package com.isartdigital.shmup.game.sprites
 			var lPosition:Point;
 			var lRadian:Number;
 			var lVelocity:Point;
-			
 			
 			if (countFrame++ >= waitingTime)
 			{
@@ -79,6 +102,30 @@ package com.isartdigital.shmup.game.sprites
 				}
 			}
 		
+		}
+		
+		public function doDestroy()
+		{
+			nbOfLife--;
+			
+			if (0 >= nbOfLife)
+			{
+				doAction = doExplosion;
+			}
+			else
+			{
+				if (state != "hurt")
+				{
+					doAction = doActionHurt;
+				}
+			}
+		
+		}
+		
+		override public function destroy():void
+		{
+			list.removeAt(list.indexOf(this));
+			super.destroy();
 		}
 		
 		override public function start():void

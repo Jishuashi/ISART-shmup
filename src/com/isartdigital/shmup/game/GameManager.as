@@ -9,12 +9,14 @@
 	import com.isartdigital.shmup.game.layers.ScrollingLayer;
 	import com.isartdigital.shmup.game.levelDesign.EnemyGenerator;
 	import com.isartdigital.shmup.game.sprites.Enemy;
+	import com.isartdigital.shmup.game.sprites.Obstacle;
 	import com.isartdigital.shmup.game.sprites.Player;
 	import com.isartdigital.shmup.game.sprites.ShotEnemy;
 	import com.isartdigital.shmup.game.sprites.ShotPlayer;
 	import com.isartdigital.shmup.ui.GameOver;
 	import com.isartdigital.shmup.ui.UIManager;
 	import com.isartdigital.shmup.ui.WinScreen;
+	import com.isartdigital.shmup.ui.hud.Hud;
 	import com.isartdigital.utils.Config;
 	import com.isartdigital.utils.Monitor;
 	import com.isartdigital.utils.game.GameObject;
@@ -152,11 +154,18 @@
 			
 			Player.getInstance().doAction();
 			GameLayer.getInstance().doAction();
-			ShotPlayer.doActionNormalShot();
 			
 			for (var f : int = 0 ; f < ShotEnemy.list.length ; f++)
 			{
 				ShotEnemy.list[f].doAction();
+			}
+			
+			if (ShotPlayer.list.length != 0)
+			{
+				for (var e : int = 0 ; e < ShotPlayer.list.length ; e++)
+				{
+					ShotPlayer.list[e].doAction();
+				}
 			}
 			
 			for (var i : int = 0; i < Enemy.list.length ; i++ )
@@ -164,15 +173,39 @@
 				Enemy.list[i].doAction();
 			}
 			
+			for (var j:int = 0; j < Obstacle.list.length ; j++) 
+			{
+				Obstacle.list[j].doAction();
+			}
+			
 		}
 
 		public static function gameOver ():void {
 			pause();
+			GameStage.getInstance().getHudContainer().removeChild(Hud.getInstance());
+			GameStage.getInstance().getGameContainer().removeChild(GameLayer.getInstance());
+			
+			for (var i:int = ShotPlayer.list.length -1; i > -1; i--) 
+			{
+				ShotPlayer.list[i].destroy();
+			}
+			
+			for (var j:int = ShotEnemy.list.length -1 ; j > -1 ; j--) 
+			{
+				ShotEnemy.list[j].destroy();
+			}
+			
+			
+			GameOver.getInstance().txtScore.text = "Score :" + Hud.getInstance().totalScore;
+			
 			UIManager.addScreen(GameOver.getInstance());
 		}
 		
 		public static function win():void {
 			pause();
+			GameStage.getInstance().getHudContainer().removeChild(Hud.getInstance());
+			GameStage.getInstance().getGameContainer().removeChild(GameLayer.getInstance());
+			
 			UIManager.addScreen(WinScreen.getInstance());
 		}
 		

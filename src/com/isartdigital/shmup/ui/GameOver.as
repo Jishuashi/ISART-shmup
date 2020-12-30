@@ -3,6 +3,7 @@ package com.isartdigital.shmup.ui
 	import com.isartdigital.utils.ui.UIPosition;
 	import flash.display.SimpleButton;
 	import flash.events.Event;
+	import flash.text.TextField;
 	/**
 	 * Classe Game OVer (Singleton)
 	 * @author Mathieu ANTHOINE
@@ -16,9 +17,12 @@ package com.isartdigital.shmup.ui
 		
 		public var btnQuit:SimpleButton;
 		
+		
 		public function GameOver() 
 		{
 			super();
+			
+			
 		}
 		
 		/**

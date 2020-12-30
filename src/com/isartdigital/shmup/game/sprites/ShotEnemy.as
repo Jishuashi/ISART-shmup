@@ -17,7 +17,7 @@ package com.isartdigital.shmup.game.sprites
 	{
 		public static var list:Vector.<ShotEnemy> = new Vector.<ShotEnemy>();
 		public var velocity:Point;
-		private var enemyShotCollider : MovieClip;
+		private var enemyShotCollider:MovieClip;
 		
 		public function ShotEnemy(pAsset:String, pVelocity:Point)
 		{
@@ -43,22 +43,36 @@ package com.isartdigital.shmup.game.sprites
 			
 			doCollision(Player.getInstance());
 			
+			for (var j:int = Obstacle.list.length -1  ; j > -1; j--) 
+			{
+				doCollision(Obstacle.list[j]);
+			}
+			
 			if (x < lXMin || x > lXMax || y < lYMin || y > lYMax)
 			{
 				destroy();
 			}
 		}
 		
-		private function doCollision(pTarget : StateObject):void
+		private function doCollision(pTarget:StateObject):void
 		{
-			if (CollisionManager.hasCollision(hitBox , pTarget , hitPoints))
+			if (CollisionManager.hasCollision(hitBox, pTarget, hitPoints))
 			{
 				doAction = doExplosion;
+				if (!Player.invincible)
+				{
+					if (pTarget is Player)
+					{
+						pTarget.doAction = Player(pTarget).doActionHurt;
+					}
+				}
 				
-				if (pTarget is Player) 	pTarget.doAction = Player(pTarget).doActionHurt;
+				if (pTarget is Obstacle2)
+				{
+					pTarget.doAction = Obstacle2(pTarget).doExplosion;
+				}
 			}
 		}
-		
 		
 		override public function get hitPoints():Vector.<Point>
 		{
@@ -76,8 +90,7 @@ package com.isartdigital.shmup.game.sprites
 			return lPosHitPoints;
 		}
 		
-		
-		public function doExplosion():void 
+		public function doExplosion():void
 		{
 			setState("explosion");
 			

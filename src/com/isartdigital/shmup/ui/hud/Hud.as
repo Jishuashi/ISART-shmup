@@ -26,12 +26,17 @@ package com.isartdigital.shmup.ui.hud
 		public var mcTopRight:MovieClip;
 		public var mcBottomRight:MovieClip;
 		
-		protected var score:TextField;
+		public var score:TextField;
+		public var totalScore: int = 0;
 	
 		public function Hud() 
 		{
 			super();
             
+			score = mcTopCenter.txtScore;
+			
+			score.text = "Score :" + totalScore;
+			
 			if (!Config.debug && Controller.type != Controller.TOUCH) {
 				removeChild(mcBottomRight);
 				mcBottomRight = null;
