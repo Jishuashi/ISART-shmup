@@ -49,7 +49,7 @@
 		/**
 		 * Activation
 		 */
-		public function start (): void {
+		public function start(): void {
 			setModeNormal();
 		}
 		

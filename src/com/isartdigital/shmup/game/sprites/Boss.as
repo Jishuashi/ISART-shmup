@@ -1,5 +1,6 @@
 package com.isartdigital.shmup.game.sprites 
 {
+	import com.isartdigital.shmup.game.levelDesign.EnemyGenerator;
 	import com.isartdigital.utils.game.StateObject;
 	
 	/**
@@ -8,13 +9,15 @@ package com.isartdigital.shmup.game.sprites
 	 */
 	public class Boss extends Enemy 
 	{
-		public static var list:Vector.<Boss> = new Vector.<Boss>();
+		public static var boss: Enemy;
 		
 		public function Boss(pAsset : String) 
 		{
 			super(pAsset);
 			assetName = pAsset;
+			scaleX = scaleY = 1;
 		}
+		
 		
 	}
 

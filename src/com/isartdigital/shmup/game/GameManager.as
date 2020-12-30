@@ -10,6 +10,7 @@
 	import com.isartdigital.shmup.game.levelDesign.EnemyGenerator;
 	import com.isartdigital.shmup.game.sprites.Enemy;
 	import com.isartdigital.shmup.game.sprites.Player;
+	import com.isartdigital.shmup.game.sprites.ShotEnemy;
 	import com.isartdigital.shmup.game.sprites.ShotPlayer;
 	import com.isartdigital.shmup.ui.GameOver;
 	import com.isartdigital.shmup.ui.UIManager;
@@ -22,6 +23,7 @@
 	import flash.display.MovieClip;
     import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.SampleDataEvent;
     import flash.geom.Point;
 	import flash.utils.getDefinitionByName;
 	
@@ -37,9 +39,7 @@
 		protected static var isPause:Boolean = true;
 		public static var background1: InfiniteLayer;
 		public static var background2: InfiniteLayer;
-		public static var foreground: InfiniteLayer;
-		
-		
+		public static var foreground: InfiniteLayer;		
 		
 		/**
 		 * controlleur
@@ -103,7 +103,7 @@
 			GameLayer.getInstance().start();
 			background1.start();
 			background2.start();
-			foreground.start();		
+			foreground.start();	
 			
             
 			resume();
@@ -153,7 +153,16 @@
 			Player.getInstance().doAction();
 			GameLayer.getInstance().doAction();
 			ShotPlayer.doActionNormalShot();
-			Enemy.doActionEnemy();
+			
+			for (var f : int = 0 ; f < ShotEnemy.list.length ; f++)
+			{
+				ShotEnemy.list[f].doAction();
+			}
+			
+			for (var i : int = 0; i < Enemy.list.length ; i++ )
+			{
+				Enemy.list[i].doAction();
+			}
 			
 		}
 

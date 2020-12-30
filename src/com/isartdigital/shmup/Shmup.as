@@ -4,6 +4,9 @@ package com.isartdigital.shmup
 	import com.isartdigital.shmup.controller.ControllerPad;
 	import com.isartdigital.shmup.game.levelDesign.EnemyGenerator;
 	import com.isartdigital.shmup.game.levelDesign.ObstacleGenerator;
+	import com.isartdigital.shmup.game.sprites.Enemy0;
+	import com.isartdigital.shmup.game.sprites.Enemy1;
+	import com.isartdigital.shmup.game.sprites.Enemy2;
 	import com.isartdigital.shmup.ui.GraphicLoader;
 	import com.isartdigital.shmup.ui.TitleCard;
 	import com.isartdigital.shmup.ui.UIManager;
@@ -200,6 +203,10 @@ package com.isartdigital.shmup
 		private static function importClasses (): void {
 			ObstacleGenerator;
 			EnemyGenerator;
+			Enemy0;
+			Enemy1;
+			Enemy2;
+			
 		}
 		
 

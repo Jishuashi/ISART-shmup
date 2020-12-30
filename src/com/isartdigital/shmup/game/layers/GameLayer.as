@@ -22,7 +22,7 @@ package com.isartdigital.shmup.game.layers
 		protected var ennemiesGenerator:EnemyGenerator = new EnemyGenerator;
 	
 		
-		private var _speed:int = -10;
+		private var _speed:int = -5;
 		
 		public function get speed():int
 		{
