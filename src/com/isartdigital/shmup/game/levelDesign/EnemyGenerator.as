@@ -16,7 +16,7 @@
 	 */
 	public class EnemyGenerator extends GameObjectGenerator
 	{
-		private const BOSS_FIRST_STATUT:int = 0;
+		private var indexBoss : int = 0;
 		private var enemy:Enemy;
 		public var enemyType:String;
 		
@@ -39,12 +39,15 @@
 				{
 				case "0": 
 					enemy = new Enemy0(enemyType);
+					enemy.start();
 					break;
 				case "1": 
 					enemy = new Enemy1(enemyType);
+					enemy.start();
 					break;
 				case "2": 
 					enemy = new Enemy2(enemyType);
+					enemy.start();
 					break;
 				default: 
 					trace("Error");
@@ -56,8 +59,15 @@
 			}
 			else
 			{
-				enemy = new Boss("Boss" + BOSS_FIRST_STATUT);
+				Boss.listOfPhase.push(new Boss("Boss0"));
+				Boss.listOfPhase.push(new Boss("Boss1"));
+				Boss.listOfPhase.push(new Boss("Boss2"));
+				
+				enemy = Boss.listOfPhase[0];
+				enemy.start();	
 			}
+			
+			
 			
 			enemy.x = x;
 			enemy.y = y;
@@ -65,7 +75,7 @@
 			enemy.cacheAsBitmap = true;
 			
 			parent.addChild(enemy);
-			enemy.start();
+			
 			
 			super.generate();
 		}

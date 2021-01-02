@@ -53,6 +53,11 @@ package com.isartdigital.shmup.game.sprites
 				doCollision(Obstacle.list[j]);
 			}
 			
+			for (var k:int = Boss.listOfPhase.length -1 ; k > -1 ; k--) 
+			{
+				doCollision(Boss.listOfPhase[k])
+			}
+			
 			if (x < lXMin || x > lXMax || y < lYMin || y > lYMax)
 			{
 				destroy();
@@ -61,9 +66,9 @@ package com.isartdigital.shmup.game.sprites
 		
 		private function doCollision(pTarget:StateObject):void
 		{
-			if (CollisionManager.hasCollision(hitBox, pTarget, hitPoints))
+			if (CollisionManager.hasCollision(hitBox, pTarget.hitBox , hitPoints))
 			{
-				if (pTarget is Enemy)
+				if (pTarget is Enemy && !Enemy.allyModeOn)
 				{
 					Enemy(pTarget).doDestroy();
 				}
@@ -73,11 +78,16 @@ package com.isartdigital.shmup.game.sprites
 					pTarget.doAction = Obstacle2(pTarget).doExplosion;
 				}
 				
+				if (pTarget is Boss)
+				{
+					pTarget.doAction = Boss(pTarget).doActionHurtBoss;
+				}
+				
 				doAction = doExplosion;
 			}
 		}
 		
-		private function doExplosion():void
+		public function doExplosion():void
 		{
 			setState("explosion");
 			

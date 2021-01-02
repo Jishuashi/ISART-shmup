@@ -18,11 +18,9 @@ package com.isartdigital.shmup.game.sprites
 		{
 			setState("explosion")
 			
-			if (isAnimEnd())
+			if(isAnimEnd())
 			{
-				setState("default");
 				destroy();
-				
 			}
 		}
 		

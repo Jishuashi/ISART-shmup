@@ -5,6 +5,7 @@ package com.isartdigital.shmup.game.sprites
 	import com.isartdigital.shmup.game.levelDesign.EnemyGenerator;
 	import com.isartdigital.shmup.ui.hud.Hud;
 	import com.isartdigital.utils.Config;
+	import com.isartdigital.utils.game.GameStage;
 	import com.isartdigital.utils.game.StateObject;
 	import flash.display.MovieClip;
 	import flash.geom.Point;
@@ -23,11 +24,12 @@ package com.isartdigital.shmup.game.sprites
 		protected static var indexShotAsset:int = 0;
 		public static var list:Vector.<Enemy> = new Vector.<Enemy>();
 		protected var nbOfCanon:int = 1;
-		protected var scoreValue: int ;
+		public static var allyModeOn :Boolean = false;
+		protected var scoreValue:int;
 		protected var waitingTime:int = 60;
 		protected var countFrame:int = 0;
 		protected var speed:int = 5;
-		protected var nbOfLife:int;
+		public var nbOfLife:int;
 		protected var durationInFrame:int;
 		protected var enemyCollider:MovieClip;
 		
@@ -56,7 +58,7 @@ package com.isartdigital.shmup.game.sprites
 			}
 		}
 		
-		public function doExplosion():void 
+		public function doExplosion():void
 		{
 			setState("explosion");
 			
@@ -106,10 +108,35 @@ package com.isartdigital.shmup.game.sprites
 		
 		public function doDestroy()
 		{
-			nbOfLife--;
+			var lPercent:int = Math.floor(Math.random() * 100);
+			
+			nbOfLife -= Player.getInstance().weaponDamage;
 			
 			if (0 >= nbOfLife)
 			{
+				if (lPercent > 75)
+				{
+					if (Collectable.list.length == 0)
+					{
+						Collectable.list.push(new CollectableLife("CollectableLife"));
+						Collectable.list.push(new CollectableBomb("CollectableBomb"));
+						
+						for (var i:int = 0; i < Collectable.list.length; i++)
+						{
+							Collectable.list[i].start();
+						}
+					}
+					
+					var lIndex:int = Math.floor(Math.random() * Collectable.list.length);
+					
+					trace("GENERATE : " + Collectable.list[lIndex].name)
+					
+					Collectable.list[lIndex].x = x;
+					Collectable.list[lIndex].y = y;
+					
+					GameLayer.getInstance().addChild(Collectable.list[lIndex]);
+				}
+				
 				doAction = doExplosion;
 			}
 			else
@@ -120,6 +147,28 @@ package com.isartdigital.shmup.game.sprites
 				}
 			}
 		
+		}
+		
+		public function setModeAlly():void
+		{
+			var lPosAllyOfPlayer:Point = new Point(Player.getInstance().x + 100, Player.getInstance().y - 150)
+			
+			x = lPosAllyOfPlayer.x;
+			y = lPosAllyOfPlayer.y;
+			
+			if (scaleX > 0)
+			{
+				scaleX *= -1;
+			}
+			
+			doShotNormal();
+			
+			x -= GameLayer.getInstance().speed;
+		}
+		
+		public function doShotAlly():void 
+		{
+			
 		}
 		
 		override public function destroy():void

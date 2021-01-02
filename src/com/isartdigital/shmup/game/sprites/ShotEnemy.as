@@ -56,7 +56,7 @@ package com.isartdigital.shmup.game.sprites
 		
 		private function doCollision(pTarget:StateObject):void
 		{
-			if (CollisionManager.hasCollision(hitBox, pTarget, hitPoints))
+			if (CollisionManager.hasCollision(hitBox, pTarget.hitBox, hitPoints))
 			{
 				doAction = doExplosion;
 				if (!Player.invincible)

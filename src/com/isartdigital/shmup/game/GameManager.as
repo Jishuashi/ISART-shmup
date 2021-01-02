@@ -8,9 +8,18 @@
 	import com.isartdigital.shmup.game.layers.InfiniteLayer;
 	import com.isartdigital.shmup.game.layers.ScrollingLayer;
 	import com.isartdigital.shmup.game.levelDesign.EnemyGenerator;
+	import com.isartdigital.shmup.game.sprites.Bomb;
+	import com.isartdigital.shmup.game.sprites.Boss;
+	import com.isartdigital.shmup.game.sprites.Collectable;
+	import com.isartdigital.shmup.game.sprites.CollectableBomb;
+	import com.isartdigital.shmup.game.sprites.CollectableFirePower;
+	import com.isartdigital.shmup.game.sprites.CollectableFireUpgrade;
+	import com.isartdigital.shmup.game.sprites.CollectableLife;
+	import com.isartdigital.shmup.game.sprites.CollectableShield;
 	import com.isartdigital.shmup.game.sprites.Enemy;
 	import com.isartdigital.shmup.game.sprites.Obstacle;
 	import com.isartdigital.shmup.game.sprites.Player;
+	import com.isartdigital.shmup.game.sprites.ShotBoss;
 	import com.isartdigital.shmup.game.sprites.ShotEnemy;
 	import com.isartdigital.shmup.game.sprites.ShotPlayer;
 	import com.isartdigital.shmup.ui.GameOver;
@@ -41,7 +50,8 @@
 		protected static var isPause:Boolean = true;
 		public static var background1: InfiniteLayer;
 		public static var background2: InfiniteLayer;
-		public static var foreground: InfiniteLayer;		
+		public static var foreground: InfiniteLayer;	
+		public static var playerInstance: Player;
 		
 		/**
 		 * controlleur
@@ -77,7 +87,8 @@
 			var lBackground1Class: Class = getDefinitionByName("Background1") as Class;			
 			var lBackground2Class: Class = getDefinitionByName("Background2") as Class;
 			var lForegroundClass : Class = getDefinitionByName("Foreground") as Class;
-		
+			
+			playerInstance = Player.getInstance();
 			background1 = new lBackground1Class();
 			background2 = new lBackground2Class();
 			foreground = new lForegroundClass();
@@ -100,6 +111,18 @@
 			
 			Player.getInstance().x =  lPlayerPostion.x
 			Player.getInstance().y = lPlayerPostion.y;
+			
+			Collectable.list.push(new CollectableLife("CollectableLife"));
+			Collectable.list.push(new CollectableBomb("CollectableBomb"));
+			Collectable.list.push(new CollectableFirePower("CollectableFirePower"));
+			Collectable.list.push(new CollectableFireUpgrade("CollectableFireUpgrade"));
+			Collectable.list.push(new CollectableFireUpgrade("CollectableFireUpgrade"));
+			
+			
+			for (var i:int = 0; i < Collectable.list.length; i++) 
+			{
+				Collectable.list[i].start();
+			}
 			
             Player.getInstance().start();
 			GameLayer.getInstance().start();
@@ -177,6 +200,27 @@
 			{
 				Obstacle.list[j].doAction();
 			}
+			
+			for (var k:int = 0; k < Collectable.list.length; k++) 
+			{
+				Collectable.list[k].doAction();
+			}
+			
+			for (var l:int = 0; l  < ShotBoss.list.length ; l++) 
+			{
+				ShotBoss.list[l].doAction();
+			}
+			
+			Bomb.bomb.doAction();
+			
+			for (var m:int = 0; m < Boss.listOfPhase.length ; m++) 
+			{
+				Boss.listOfPhase[m].doAction();
+			}
+			
+			
+			if (playerInstance.special != null) playerInstance.special.doAction();
+			
 			
 		}
 

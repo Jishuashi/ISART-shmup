@@ -46,23 +46,31 @@
 		protected var speed:Number = 10;
 		
 		public static var nbOfCannon:int = 1;
-		public static var weaponLevel:int = 2;
-		private var life:int = 3;
+		public  var weaponLevel:int = 2;
+		public var life:int = 3;
+		public var weaponDamage : int = 1;
 		private var indexShotAsset:int = 0;
-		private var waitingTime:int = 40;
-		private var waitingTime2:int = 200;
+		private var waitingTime:int = 25;
+		private var waitingTimeSpecial:int = 120;
+		private var waitingTime2:int = 400;
 		private var countFrame:int = 0;
+		private var countFrameSpecial:int = 120;
 		private var countFrame2:int = 0;
 		
 		public static var invincible:Boolean = false;
+		public var bombOn:Boolean = false;
 		
 		public var shield:Shield;
 		private var weapon:MovieClip;
 		public static var playerCollider:MovieClip;
 		protected var weaponPlayerNextLevel:MovieClip;
 		private var weaponPlayer:MovieClip;
+		public var bomb:Bomb = new Bomb("Bomb");
+		public var special:Special;
 		
 		private var weaponClass:Class;
+		
+		public var nbOfBomb:int = 2;
 		
 		public function Player()
 		{
@@ -109,7 +117,7 @@
 				setState("left");
 			}
 			
-			if (countFrame2++  >= waitingTime2 && invincible)
+			if (countFrame2++ >= waitingTime2 && invincible)
 			{
 				invincible = false;
 			}
@@ -127,6 +135,8 @@
 			weaponPlayerNextLevel = MovieClip(renderer.getChildAt(0)).mcWeapon;
 			
 			doShotNormal();
+			doBomb();
+			doSpecial();
 			
 			if (weaponPlayerNextLevel != weaponPlayer)
 			{
@@ -140,13 +150,71 @@
 			y += lVertical * speed;
 		}
 		
+		public function doBomb():void
+		{			
+			if (controller.bomb)
+			{
+				if (nbOfBomb > 0 && !bombOn)
+				{
+					bombOn = true;
+					Hud.getInstance().mcTopLeft.getChildByName("mcGuide" + (nbOfBomb - 1)).visible = false;
+					nbOfBomb -= 1;
+					trace("Booooooooom!")
+					bomb.spawnBomb();
+					
+				}
+			}
+		
+		}
+		
+		public function doShield():void 
+		{
+			trace("Hello");
+		}
+		
+		public function doSpecial():void
+		{
+			var lShot:ShotPlayer;
+			var lPosition:Point;
+			var lRadian:Number;
+			var lVelocity:Point;
+			
+			var lSpecialCollider:MovieClip = playerCollider.mcSpecial;
+			
+			if (controller.special)
+			{
+				if (countFrameSpecial++ >= waitingTimeSpecial)
+				{
+					lPosition = parent.globalToLocal(Player.getInstance().localToGlobal(new Point(lSpecialCollider.x, lSpecialCollider.y)));
+					lRadian = lSpecialCollider.rotation * MathTools.DEG2RAD;
+					lVelocity = new Point(Math.cos(lRadian) * Special.SPEED_SPE, Math.sin(lRadian) * Special.SPEED_SPE);
+					special = new Special("Special", lVelocity);
+					
+					special.x = lPosition.x;
+					special.y = lPosition.y;
+					
+					special.rotation = lSpecialCollider.rotation;
+					
+					special.cacheAsBitmap = true;
+					
+					special.scaleX = special.scaleY = 0.8;
+					
+					special.start();
+					
+					parent.addChild(special);
+					countFrameSpecial = 0;
+				}
+				
+			}
+		}
+		
 		public function doShotNormal():void
 		{
 			
-			var lShot:ShotPlayer
+			var lShot:ShotPlayer;
 			var lPosition:Point;
 			var lRadian:Number;
-			var lVelocity:Point
+			var lVelocity:Point;
 			
 			if (controller.fire)
 			{
@@ -231,7 +299,7 @@
 					if (life == 2)
 					{
 						trace(life)
-						lHud.mcTopRight.removeChild(lHud.mcTopRight.mcGuide2);
+						lHud.mcTopRight.mcGuide2.visible = false;
 						
 						invincible = true;
 						doAction = doDestroy;
@@ -239,7 +307,7 @@
 					}
 					else if (life == 1)
 					{
-						lHud.mcTopRight.removeChild(lHud.mcTopRight.mcGuide1);
+						lHud.mcTopRight.mcGuide1.visible = false;
 						
 						invincible = true;
 						doAction = doDestroy;

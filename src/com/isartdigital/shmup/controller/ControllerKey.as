@@ -71,6 +71,10 @@ package com.isartdigital.shmup.controller
 			return keys[Keyboard[Config["keyFire"]]];
 		}
 		
+		override public function get special():Boolean 
+		{
+			return keys[Keyboard[Config["keySpecial"]]];
+		}
 		/**
 		 * Retourne l'instance unique de la classe, et la crée si elle n'existait pas au préalable
 		 * @return instance unique
