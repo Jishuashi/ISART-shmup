@@ -78,7 +78,6 @@ package com.isartdigital.shmup.game.sprites
 				
 				if (pTarget is Boss && !Boss.changePhase)
 				{
-					
 					if (Boss(pTarget).life > 0) pTarget.doAction = Boss(pTarget).doActionHurtBoss;
 					doAction = doExplosion;
 				}

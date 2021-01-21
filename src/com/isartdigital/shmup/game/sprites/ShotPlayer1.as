@@ -23,15 +23,8 @@ package com.isartdigital.shmup.game.sprites
 		
 		override protected function move():void
 		{
-			
-			rotation += 0.5;
-			
-			y -= Math.sin(speedY * MathTools.DEG2RAD) * 1;
-			speedY += 0.5;
-			
-			x -= GameLayer.getInstance().speed * speedX;
-			speedX += 0.1;
-		
+			x += velocity.x
+			y += velocity.y
 		}
 	}
 }

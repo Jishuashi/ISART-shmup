@@ -93,8 +93,8 @@ package com.isartdigital.shmup.game.sprites
 			
 			if (isAnimEnd())
 			{
-				Hud.getInstance().totalScore += scoreValue;
-				Hud.getInstance().score.text = "Score :" + Hud.getInstance().totalScore;
+				Hud.totalScore += scoreValue;
+				Hud.getInstance().score.text = "Score :" + Hud.totalScore;
 				destroy();
 			}
 		}
@@ -134,7 +134,7 @@ package com.isartdigital.shmup.game.sprites
 					
 					parent.addChild(lShot);
 					
-					//lSoundShot.start();
+					lSoundShot.start();
 					
 					lShot.start();
 					countFrame = 0;
@@ -247,6 +247,7 @@ package com.isartdigital.shmup.game.sprites
 		
 		public function doDestroyAlly():void
 		{
+			
 			setState("explosion")
 			
 			if (isAnimEnd())

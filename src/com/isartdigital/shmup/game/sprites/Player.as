@@ -54,7 +54,7 @@
 		public var weaponDamage:int = 1;
 		
 		private var waitingTime:int = 10;
-		private var waitingTimeSpecial:int = 120;
+		private var waitingTimeSpecial:int = 60;
 		private var waitingTimeGodMode:int = 120;
 		
 		private var countFrame:int = 0;
@@ -94,6 +94,12 @@
 		
 		override protected function doActionNormal():void
 		{
+			
+			if (GameManager.startOn)
+			{
+				x += 5;
+			}
+			
 			
 			var lHorizontal:Number = controller.right - controller.left;
 			var lVertical:Number = controller.down - controller.up;
@@ -308,6 +314,8 @@
 				if (countFrame++ >= waitingTime)
 				{
 					
+					lSoundShot.start();
+					
 					for (var i:int = 0; i < nbOfCannon; i++)
 					{
 						weapon.play();
@@ -332,7 +340,7 @@
 						lShot.start();
 						ShotPlayer.list.push(lShot);
 						
-						//lSoundShot.start();
+						
 						
 						parent.addChild(lShot);
 						

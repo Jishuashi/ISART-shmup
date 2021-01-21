@@ -31,7 +31,7 @@ package com.isartdigital.shmup.ui.hud
 		public var mcBottomRight:MovieClip;
 		
 		public var score:TextField;
-		public var totalScore: int = 0;
+		public  static var totalScore: int = 0;
 		public var btnPause: SimpleButton;
 	
 		public function Hud() 

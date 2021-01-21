@@ -1,5 +1,8 @@
 ﻿package com.isartdigital.shmup.game {
 	
+	import adobe.utils.CustomActions;
+	import com.greensock.TweenLite;
+	import com.greensock.plugins.Positions2DPlugin;
 	import com.isartdigital.shmup.controller.Controller;
 	import com.isartdigital.shmup.controller.ControllerKey;
 	import com.isartdigital.shmup.controller.ControllerPad;
@@ -25,6 +28,7 @@
 	import com.isartdigital.shmup.game.sprites.ShotBoss;
 	import com.isartdigital.shmup.game.sprites.ShotEnemy;
 	import com.isartdigital.shmup.game.sprites.ShotPlayer;
+	import com.isartdigital.shmup.ui.BlackBand;
 	import com.isartdigital.shmup.ui.GameOver;
 	import com.isartdigital.shmup.ui.PauseScreen;
 	import com.isartdigital.shmup.ui.UIManager;
@@ -43,8 +47,10 @@
 	import flash.events.Event;
 	import flash.events.SampleDataEvent;
     import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import flash.media.Sound;
 	import flash.utils.getDefinitionByName;
+	import utils.math.MathTools;
 	
 	/**
 	 * Manager (Singleton) en charge de gérer le déroulement d'une partie
@@ -70,6 +76,10 @@
 		public static var boss1Loop : SoundFX =	SoundManager.getNewSoundFX("bossLoop1");
 		public static var boss2Loop : SoundFX =	SoundManager.getNewSoundFX("bossLoop2");
 		
+		public static var rectangleUp : MovieClip = new BlackBand();
+		public static var rectangleBottom : MovieClip = new BlackBand();
+		
+		public static var startOn : Boolean = true;
 		
 		public static var isCredits : Boolean = false;
 		
@@ -128,7 +138,7 @@
 			
 			GameLayer.getInstance().addChild(Player.getInstance());
 			
-			var lGlobalPlayerPosition: Point = new Point(Config.stage.stageWidth / 3, Config.stage.stageHeight / 2 );
+			var lGlobalPlayerPosition: Point = new Point(-Config.stage.stageWidth / 3, Config.stage.stageHeight / 2 );
 			var lPlayerPostion: Point = GameLayer.getInstance().globalToLocal(lGlobalPlayerPosition);
 			
 			Player.getInstance().x =  lPlayerPostion.x
@@ -153,6 +163,21 @@
 			background1.start();
 			background2.start();
 			foreground.start();	
+			
+			
+			
+			var lPosOnGameLayerInHudDown: Point = MathTools.localToGlobalToLocalPoint(GameLayer.getInstance().screenLimits.bottomRight , GameLayer.getInstance() , Hud.getInstance());
+			var lPosOnGameLayerInHudUp : Point = MathTools.localToGlobalToLocalPoint(GameLayer.getInstance().screenLimits.topLeft , GameLayer.getInstance() , Hud.getInstance());
+			
+			
+			rectangleBottom.x = lPosOnGameLayerInHudDown.x - rectangleBottom.width / 2;
+			rectangleBottom.y = lPosOnGameLayerInHudDown.y;
+			
+			rectangleUp.x = lPosOnGameLayerInHudUp.x + rectangleUp.width / 2 ;
+			rectangleUp.y = lPosOnGameLayerInHudUp.y;
+			
+			Hud.getInstance().addChild(rectangleBottom);
+			Hud.getInstance().addChild(rectangleUp);
 			
 			ambienceSound = SoundManager.getNewSoundFX("ambienceLoop");
 			levelSound = SoundManager.getNewSoundFX("levelLoop");
@@ -266,7 +291,8 @@
 				resume();
 			}
 			
-			
+			rectangleBottom.move();
+			rectangleUp.move();
 			
 			shield.doAction();
 			
@@ -285,19 +311,19 @@
 			ambienceSound.stop();
 			levelSound.stop();
 			
-			GameOver.getInstance().txtScore.text = "Score :" + Hud.getInstance().totalScore;
+			trace(Hud.totalScore)
+			
+			GameOver.getInstance().txtScore.text = "Score :" + Hud.totalScore;
 			
 			UIManager.addScreen(GameOver.getInstance());
 		}
 		
 		public static function win():void {
 			pause();
-			GameStage.getInstance().getHudContainer().removeChild(Hud.getInstance());
-			GameStage.getInstance().getGameContainer().removeChild(GameLayer.getInstance());
 			
-			destroyAllGameObjectOnWin();
+			destroyAllGameObject();
 			
-			WinScreen.getInstance().txtScore.text = "Score :" + Hud.getInstance().totalScore;
+			WinScreen.getInstance().txtScore.text = "Score :" + Hud.totalScore;
 			
 			UIManager.addScreen(WinScreen.getInstance());
 		}
@@ -348,37 +374,6 @@
 			
 		}
 		
-		public static function destroyAllGameObjectOnWin():void
-		{
-			background2.destroy();
-			background1.destroy();
-			foreground.destroy();
-			
-			Player.getInstance().destroy();
-			
-			for (var i:int = ShotPlayer.list.length -1; i > -1; i--) 
-			{
-				ShotPlayer.list[i].destroy();
-			}
-			
-			for (var j:int = ShotEnemy.list.length -1 ; j > -1 ; j--) 
-			{
-				ShotEnemy.list[j].destroy();
-			}
-			
-			
-			for (var k:int = Enemy.list.length -1 ; k > -1; k--) 
-			{
-				Enemy.list[k].destroy();
-			}
-						
-			for (var l:int = ShotBoss.list.length -1 ; l > -1; l--) 
-			{
-				ShotBoss.list[l].destroy();
-			}	
-			
-			
-		}
 		
 		public static function resume (): void {
 			// donne le focus au stage pour capter les evenements de clavier

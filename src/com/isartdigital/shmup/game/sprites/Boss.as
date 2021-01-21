@@ -5,6 +5,8 @@ package com.isartdigital.shmup.game.sprites
 	import com.isartdigital.shmup.ui.UIManager;
 	import com.isartdigital.utils.Config;
 	import com.isartdigital.utils.game.StateObject;
+	import com.isartdigital.utils.sound.SoundFX;
+	import com.isartdigital.utils.sound.SoundManager;
 	import flash.display.MovieClip;
 	import flash.display.Stage;
 	import flash.events.Event;
@@ -39,6 +41,8 @@ package com.isartdigital.shmup.game.sprites
 		private var counterFrameBoss3:int = 0;
 		private var counterFrameBoss2:int = 0;
 		
+		private var previousBoss:Boss;
+		
 		public function Boss(pAsset:String)
 		{
 			assetName = pAsset;
@@ -55,6 +59,7 @@ package com.isartdigital.shmup.game.sprites
 		
 		override protected function doActionNormal():void
 		{
+			
 			if (counterFrameBoss++ >= waitingTimeBoss)
 			{
 				x -= speedBoss;
@@ -108,13 +113,13 @@ package com.isartdigital.shmup.game.sprites
 					return;
 				}
 				
+				previousBoss = this;
+				
 				phaseIndent = true;
 				
 				trace(phase);
 				
 				var lNextBoss:Boss = new Boss("Boss" + (phase));
-				
-				x = lNextBoss.x;
 				
 				lastPos = new Point(x, y);
 				
@@ -128,16 +133,22 @@ package com.isartdigital.shmup.game.sprites
 				trace("Boss Actuelle " + x + " // " + y)
 				trace("Boss Suivant " + lNextBoss.x + " // " + lNextBoss.y)
 				
-				
 				GameLayer.getInstance().addChildAt(lNextBoss, GameLayer.getInstance().getChildIndex(this));
 				
 			}
 			else if (isAnimEnd())
 			{
-				changePhase = false;
 				
-				GameManager.boss0Loop.fadeOut();
-				GameManager.boss1Loop.fadeIn();
+				if (phase == 1)
+				{
+					GameManager.boss0Loop.fadeOut();
+					GameManager.boss1Loop.fadeIn();
+				}
+				else if (phase == 2)
+				{
+					GameManager.boss1Loop.fadeOut();
+					GameManager.boss2Loop.fadeIn();
+				}
 				
 				phaseIndent = false;
 				
@@ -150,6 +161,17 @@ package com.isartdigital.shmup.game.sprites
 		
 		public function doSecondPhase():void
 		{
+			
+			if (doWait(30))
+			{
+				changePhase = false;
+			}
+			
+			if (previousBoss != null)
+			{
+				x -= speedBoss / 2;
+			}
+			
 			x -= speedBoss;
 			
 			if (life <= 0)
@@ -163,6 +185,16 @@ package com.isartdigital.shmup.game.sprites
 		
 		public function doThirdPhase():void
 		{
+			
+			if (doWait(30))
+			{
+				changePhase = false;
+			}
+			
+			if (previousBoss != null)
+			{
+				x -= speedBoss / 3;
+			}
 			
 			x -= speedBoss;
 			
@@ -182,8 +214,13 @@ package com.isartdigital.shmup.game.sprites
 			var lRadian:Number;
 			var lVelocity:Point;
 			
+			var lShotSound : SoundFX = SoundManager.getNewSoundFX("bossShoot");
+			
 			if (counterFrameBoss2++ >= waitingTimeBoss2)
 			{
+				
+				lShotSound.start();
+				
 				for (var i:int = 0; i < nbOfCanon; i++)
 				{
 					
@@ -221,10 +258,27 @@ package com.isartdigital.shmup.game.sprites
 				life -= Player.getInstance().weaponDamage;
 				setState("default");
 				
+				trace(life)
+				
 				if (phase == 0) doAction = doActionNormal;
 				if (phase == 1) doAction = doSecondPhase;
 				if (phase == 2) doAction = doThirdPhase;
 			}
+		}
+		
+		private function doWait(pTime:int):Boolean
+		{
+			var lWaintingTime:int = pTime;
+			var lCounterFrame:int = 0;
+			
+			var lReturn:Boolean = false;
+			
+			if (lCounterFrame++ >= waitingTime)
+			{
+				lReturn = true;
+			}
+			
+			return lReturn;
 		}
 		
 		override public function destroy():void

@@ -4,6 +4,9 @@ package com.isartdigital.shmup.game.layers
 	import com.isartdigital.shmup.game.levelDesign.GameObjectGenerator;
 	import com.isartdigital.utils.Config;
 	import com.isartdigital.utils.game.GameStage;
+	import flash.display.DisplayObject;
+	import flash.display.Stage;
+	import flash.events.Event;
 	import flash.geom.Point;
 	
 	//import com.isartdigital.utils.Debug;
@@ -32,6 +35,14 @@ package com.isartdigital.shmup.game.layers
 		public function GameLayer()
 		{
 			super();
+		}
+		
+		
+		override public function start():void 
+		{
+			super.start();
+			
+			updateScreenLimits();
 		}
 		
 		

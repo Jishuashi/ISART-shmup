@@ -46,6 +46,9 @@ package com.isartdigital.shmup.ui
 		{
 			super();
 			
+			trace(btnQuit)
+			trace(btnResume)
+			
 			btnResume.addEventListener(MouseEvent.CLICK, pauseResume);
 			btnQuit.addEventListener(MouseEvent.CLICK, quit)
 			

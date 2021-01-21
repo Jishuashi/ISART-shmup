@@ -1,12 +1,17 @@
 package com.isartdigital.shmup.game.sprites 
 {
 	import com.isartdigital.shmup.game.layers.GameLayer;
+	import flash.geom.Point;
+	import utils.math.VectorTools;
 	/**
 	 * ...
 	 * @author Hugo CHARTIER
 	 */
 	public class Enemy1 extends Enemy
 	{
+	
+		private var speed : int = 0.5;
+		
 		
 		public function Enemy1(pAsset : String) 
 		{
@@ -26,9 +31,8 @@ package com.isartdigital.shmup.game.sprites
 		{
 			super.move();
 			
-			doDestroyOutsideOfscreen();
+			y = Player.getInstance().y;
 			
-			y = Player.getInstance().y - 20;
 		}
 		
 	}
