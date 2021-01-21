@@ -1,5 +1,6 @@
 package com.isartdigital.shmup.ui
 {
+	import com.isartdigital.shmup.game.GameManager;
 	import com.isartdigital.shmup.ui.UIManager;
     import com.isartdigital.utils.sound.SoundFX;
 	import com.isartdigital.utils.sound.SoundManager;
@@ -20,11 +21,40 @@ package com.isartdigital.shmup.ui
 		 */
 		protected static var instance:TitleCard;
 		
+		public var uiSound : SoundFX = SoundManager.getNewSoundFX("uiLoop");
+		
+		
+		
 		public var btnPlay:SimpleButton;
+		public var btnCredits : SimpleButton;
+		
+		
+		public function waitingtime():void 
+		{
+			var lWaitingTime  :int = 50;
+			var lCounterFrame  :int = 0;
+			
+			if (lCounterFrame++ >= lWaitingTime)
+			{
+				GameManager.isCredits = false;
+				lCounterFrame = 0;
+			}
+		}
 		
 		public function TitleCard()
 		{
 			super();
+			
+			
+			if (!GameManager.isCredits)
+			{
+				uiSound.loop();
+			}
+			
+			EndScreen.uiSoundPass(uiSound);
+			PauseScreen.getInstance().uiLoopPass(uiSound);
+			
+			btnCredits.addEventListener(MouseEvent.CLICK , credits);
 		}
 		
 		/**
@@ -37,6 +67,12 @@ package com.isartdigital.shmup.ui
 			return instance;
 		}
 		
+		public function credits(pEvent : MouseEvent):void 
+		{
+			SoundManager.getNewSoundFX("click").start();
+			UIManager.addScreen(Credits.getInstance());
+		}
+		
 		override protected function init(pEvent:Event):void
 		{
 			super.init(pEvent);
@@ -46,8 +82,11 @@ package com.isartdigital.shmup.ui
 		protected function onClick(pEvent:MouseEvent):void
 		{
 			UIManager.addScreen(Help.getInstance());
+			Help.getInstance().uiSoundPass(uiSound);
 			SoundManager.getNewSoundFX("click").start();
 		}
+		
+		
 		
 		/**
 		 * détruit l'instance unique et met sa référence interne à null

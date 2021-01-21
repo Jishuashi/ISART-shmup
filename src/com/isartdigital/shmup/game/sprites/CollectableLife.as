@@ -13,7 +13,7 @@ package com.isartdigital.shmup.game.sprites
 		public function CollectableLife(pAsset:String)
 		{
 			super(pAsset);
-		
+			onlist = true;
 		}
 		
 		override protected function doOnCollision():void

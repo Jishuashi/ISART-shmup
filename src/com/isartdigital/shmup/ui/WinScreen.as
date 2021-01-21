@@ -1,5 +1,6 @@
 package com.isartdigital.shmup.ui 
 {
+	import com.isartdigital.utils.sound.SoundManager;
 	import com.isartdigital.utils.ui.UIPosition;
 	import flash.events.Event;
 	/**
@@ -16,7 +17,10 @@ package com.isartdigital.shmup.ui
 		public function WinScreen() 
 		{
 			super();
+			
+			SoundManager.getNewSoundFX("winJingle").start();
 		}
+		
 		
 		/**
 		 * Retourne l'instance unique de la classe, et la crée si elle n'existait pas au préalable

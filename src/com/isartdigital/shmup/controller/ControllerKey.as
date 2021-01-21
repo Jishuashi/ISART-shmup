@@ -75,6 +75,17 @@ package com.isartdigital.shmup.controller
 		{
 			return keys[Keyboard[Config["keySpecial"]]];
 		}
+		
+		override public function get god():Boolean 
+		{
+			return keys[Keyboard[Config["keyGod"]]];
+		}
+		
+		override public function get pause():Boolean 
+		{
+			return keys[Keyboard[Config["keyPause"]]];
+		}
+		
 		/**
 		 * Retourne l'instance unique de la classe, et la crée si elle n'existait pas au préalable
 		 * @return instance unique

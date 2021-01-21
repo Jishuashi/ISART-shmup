@@ -1,4 +1,4 @@
-package com.isartdigital.shmup.game.sprites 
+package com.isartdigital.shmup.game.sprites
 {
 	import com.isartdigital.shmup.game.layers.GameLayer;
 	import com.isartdigital.utils.game.CollisionManager;
@@ -8,44 +8,45 @@ package com.isartdigital.shmup.game.sprites
 	 * ...
 	 * @author Hugo CHARTIER
 	 */
-	public class Collectable extends StateObject 
+	public class Collectable extends StateObject
 	{
-		public static var list : Vector.<Collectable> = new Vector.<Collectable>();
+		public static var list:Vector.<Collectable> = new Vector.<Collectable>();
 		
-		public function Collectable(pAsset : String) 
+		protected var onlist : Boolean = false;
+		
+		public function Collectable(pAsset:String)
 		{
 			assetName = pAsset;
 			super();
-			
+		
 		}
 		
-		override protected function doActionNormal():void 
+		override protected function doActionNormal():void
 		{
 			super.doActionNormal();
 			doCollision();
 		}
 		
-		protected function doOnCollision():void 
+		protected function doOnCollision():void
 		{
-			
 		}
 		
-		
-		protected function doCollision():void 
+		protected function doCollision():void
 		{
-			if (CollisionManager.hasCollision(hitBox , Player.getInstance().hitBox))
+			if (CollisionManager.hasCollision(hitBox, Player.getInstance().hitBox))
 			{
 				doOnCollision();
 				destroy();
 			}
+		
 		}
 		
-		override public function destroy():void 
+		override public function destroy():void
 		{
-			list.removeAt(list.indexOf(this));
+			if(onlist) list.removeAt(list.indexOf(this));
 			super.destroy();
 		}
-		
+	
 	}
 
 }

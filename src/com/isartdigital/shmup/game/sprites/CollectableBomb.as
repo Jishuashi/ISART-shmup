@@ -12,12 +12,12 @@ package com.isartdigital.shmup.game.sprites
 		public function CollectableBomb(pAsset:String)
 		{
 			super(pAsset);
-		
+			onlist = true;
 		}
 		
 		override protected function doOnCollision():void
 		{
-			if (Player.getInstance().nbOfBomb <= 2)
+			if (Player.getInstance().nbOfBomb >= 0 && !(Player.getInstance().nbOfBomb == 2))
 			{
 				Player.getInstance().nbOfBomb += 1;
 				Hud.getInstance().mcTopLeft.getChildByName("mcGuide" + (Player.getInstance().nbOfBomb - 1)).visible = true;

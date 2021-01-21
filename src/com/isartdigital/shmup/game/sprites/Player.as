@@ -14,6 +14,8 @@
 	import com.isartdigital.utils.game.CollisionManager;
 	import com.isartdigital.utils.game.GameStage;
 	import com.isartdigital.utils.game.StateObject;
+	import com.isartdigital.utils.sound.SoundFX;
+	import com.isartdigital.utils.sound.SoundManager;
 	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
 	import flash.events.Event;
@@ -45,32 +47,40 @@
 		 */
 		protected var speed:Number = 10;
 		
-		public static var nbOfCannon:int = 1;
-		public  var weaponLevel:int = 2;
+		private var nbOfCannon:int = 1;
+		public var weaponLevel:int = 0;
+		public var weaponNextLevel:int = weaponLevel + 1;
 		public var life:int = 3;
-		public var weaponDamage : int = 1;
-		private var indexShotAsset:int = 0;
-		private var waitingTime:int = 25;
+		public var weaponDamage:int = 1;
+		
+		private var waitingTime:int = 10;
 		private var waitingTimeSpecial:int = 120;
-		private var waitingTime2:int = 400;
+		private var waitingTimeGodMode:int = 120;
+		
 		private var countFrame:int = 0;
 		private var countFrameSpecial:int = 120;
-		private var countFrame2:int = 0;
+		private var countFrameGodMode:int = 0;
 		
-		public static var invincible:Boolean = false;
+		public var invincible:Boolean = false;
 		public var bombOn:Boolean = false;
+		public var godModeOn:Boolean = false;
 		
 		public var shield:Shield;
+		
 		private var weapon:MovieClip;
 		public static var playerCollider:MovieClip;
 		protected var weaponPlayerNextLevel:MovieClip;
 		private var weaponPlayer:MovieClip;
+		
 		public var bomb:Bomb = new Bomb("Bomb");
+		
 		public var special:Special;
 		
 		private var weaponClass:Class;
 		
 		public var nbOfBomb:int = 2;
+		
+		private var pushButtonGodMod:Boolean = false;
 		
 		public function Player()
 		{
@@ -117,19 +127,51 @@
 				setState("left");
 			}
 			
-			if (countFrame2++ >= waitingTime2 && invincible)
-			{
-				invincible = false;
-			}
-			
 			if (shield != null)
 			{
 				shield.doAction();
 			}
 			
-			for (var i:int = Obstacle.list.length - 1; i > -1; i--)
+			if (!invincible)
 			{
-				doCollision(Obstacle.list[i]);
+				for (var i:int = Obstacle.list.length - 1; i > -1; i--)
+				{
+					doCollision(Obstacle.list[i]);
+				}
+				
+				for (var j:int = Enemy.list.length - 1; j > -1; j--)
+				{
+					doCollision(Enemy.list[j]);
+				}
+				
+			}
+			
+			if (weaponLevel == weaponNextLevel && weaponLevel < 3 && weaponLevel > -1)
+			{
+				weaponPlayer.removeChild(weapon);
+				
+				weaponNextLevel++;
+				
+				weaponPlayer = MovieClip(renderer.getChildAt(0)).mcWeapon;
+				weaponClass = getDefinitionByName("Weapon" + weaponLevel) as Class;
+				weapon = new weaponClass();
+				weaponPlayer.addChild(weapon);
+				weapon.stop();
+			}
+			
+			if (godModeOn)
+			{
+				invincible = true;
+			}
+			else
+			{
+				invincible = false;
+			}
+			
+			if (Hud.getInstance().mcTopLeft.mcSpecialBar.mcBar.x < 5)
+			{
+				
+				Hud.getInstance().mcTopLeft.mcSpecialBar.mcBar.x += 0.2;
 			}
 			
 			weaponPlayerNextLevel = MovieClip(renderer.getChildAt(0)).mcWeapon;
@@ -137,6 +179,7 @@
 			doShotNormal();
 			doBomb();
 			doSpecial();
+			doGodMode();
 			
 			if (weaponPlayerNextLevel != weaponPlayer)
 			{
@@ -145,13 +188,19 @@
 				weapon.stop();
 			}
 			
+			if (countFrameGodMode++ >= waitingTimeGodMode && pushButtonGodMod)
+			{
+				pushButtonGodMod = false;
+				countFrameGodMode = 0;
+			}
+			
 			x -= GameLayer.getInstance().speed;
 			x += lHorizontal * speed;
 			y += lVertical * speed;
 		}
 		
 		public function doBomb():void
-		{			
+		{
 			if (controller.bomb)
 			{
 				if (nbOfBomb > 0 && !bombOn)
@@ -159,6 +208,8 @@
 					bombOn = true;
 					Hud.getInstance().mcTopLeft.getChildByName("mcGuide" + (nbOfBomb - 1)).visible = false;
 					nbOfBomb -= 1;
+					Bomb.debug = false;
+					SoundManager.getNewSoundFX("bomb").start();
 					trace("Booooooooom!")
 					bomb.spawnBomb();
 					
@@ -167,7 +218,28 @@
 		
 		}
 		
-		public function doShield():void 
+		public function doGodMode():void
+		{
+			if (controller.god && !pushButtonGodMod)
+			{
+				if (godModeOn)
+				{
+					godModeOn = false;
+					trace("GodMode Desactivé");
+					pushButtonGodMod = true;
+					return;
+				}
+				else
+				{
+					godModeOn = true;
+					trace("GodMode Activé");
+					pushButtonGodMod = true;
+					return;
+				}
+			}
+		}
+		
+		public function doShield():void
 		{
 			trace("Hello");
 		}
@@ -216,6 +288,8 @@
 			var lRadian:Number;
 			var lVelocity:Point;
 			
+			var lSoundShot : SoundFX = SoundManager.getNewSoundFX("playerShoot0");
+			
 			if (controller.fire)
 			{
 				switch (weaponLevel)
@@ -228,6 +302,7 @@
 					break;
 				case 2: 
 					nbOfCannon = 5;
+					break;
 				}
 				
 				if (countFrame++ >= waitingTime)
@@ -235,10 +310,15 @@
 					
 					for (var i:int = 0; i < nbOfCannon; i++)
 					{
+						weapon.play();
+						
 						lPosition = parent.globalToLocal(Player.getInstance().localToGlobal(new Point(playerCollider.getChildByName("mcWeapon" + i).x, playerCollider.getChildByName("mcWeapon" + i).y)));
 						lRadian = playerCollider.getChildByName("mcWeapon" + i).rotation * MathTools.DEG2RAD;
 						lVelocity = new Point(Math.cos(lRadian) * ShotPlayer.SHOT_SPEED, Math.sin(lRadian) * ShotPlayer.SHOT_SPEED);
-						lShot = new ShotPlayer("ShotPlayer" + indexShotAsset, lVelocity);
+						
+						if (weaponLevel == 0) lShot = new ShotPlayer0("ShotPlayer0", lVelocity);
+						if (weaponLevel == 1) lShot = new ShotPlayer1("ShotPlayer1", lVelocity);
+						if (weaponLevel == 2) lShot = new ShotPlayer2("ShotPlayer2", lVelocity);
 						
 						lShot.x = lPosition.x;
 						lShot.y = lPosition.y;
@@ -247,16 +327,25 @@
 						
 						lShot.cacheAsBitmap = true;
 						
-						lShot.scaleX = lShot.scaleY = 0.8;
+						lShot.scaleX = lShot.scaleY = 1, 5;
 						
 						lShot.start();
 						ShotPlayer.list.push(lShot);
 						
+						//lSoundShot.start();
+						
 						parent.addChild(lShot);
+						
 						countFrame = 0;
+						
+						
+						if (isAnimEnd())
+						{
+							lSoundShot.stop();
+							weapon.stop();
+						}
 					}
-				}
-				
+				}				
 			}
 		}
 		
@@ -264,44 +353,58 @@
 		{
 			if (CollisionManager.hasCollision(hitBox, pTarget.hitBox, hitPoints))
 			{
-				doAction = doActionHurt;
 				
-				if (pTarget is Obstacle2)
+				if (pTarget is Obstacle2 && !invincible && !Shield.shieldOn)
 				{
 					pTarget.doAction = Obstacle2(pTarget).doExplosion;
+					doAction = doActionHurt;
 				}
 				
-				if (pTarget is Enemy)
+				if (pTarget is Enemy && !invincible && !Shield.shieldOn)
 				{
 					pTarget.doAction = Enemy(pTarget).doDestroy;
+					doAction = doActionHurt;
 				}
 			}
-		
 		}
 		
 		public function doActionHurt():void
 		{
+			var lSoundHurt:SoundFX = SoundManager.getNewSoundFX("loseLife");
+			
 			setState("hurt");
 			
 			if (isAnimEnd())
 			{
+				lSoundHurt.start();
 				
 				var lHud:Hud = Hud.getInstance();
-				shield = new Shield("Shield");
-				shield.start();
 				
 				setState("default")
 				
 				if (!invincible)
 				{
-					life--;
+					life -= 1;
 					
 					if (life == 2)
 					{
 						trace(life)
 						lHud.mcTopRight.mcGuide2.visible = false;
 						
-						invincible = true;
+						if (!Shield.shieldOn)
+						{
+							GameManager.shield = new Shield("Shield");
+							
+							GameManager.shield.x = x;
+							GameManager.shield.y = y;
+							
+							GameManager.shield.start();
+							
+							Shield.shieldOn = true;
+							
+							GameLayer.getInstance().addChild(GameManager.shield);
+						}
+						
 						doAction = doDestroy;
 						
 					}
@@ -309,13 +412,25 @@
 					{
 						lHud.mcTopRight.mcGuide1.visible = false;
 						
-						invincible = true;
+						if (!Shield.shieldOn)
+						{
+							GameManager.shield = new Shield("Shield");
+							
+							GameManager.shield.x = x;
+							GameManager.shield.y = y;
+							
+							GameManager.shield.start();
+							
+							Shield.shieldOn = true;
+							
+							GameLayer.getInstance().addChild(GameManager.shield);
+						}
+						
 						doAction = doDestroy;
 					}
-					else if (life >= 0)
+					else if (life <= 0)
 					{
 						GameManager.gameOver();
-						return;
 					}
 				}
 				
@@ -332,12 +447,7 @@
 			{
 				
 				setState("default")
-				for (var i:int = 0; i < 2; i++)
-				{
-					visible = false;
-					
-					visible = true;
-				}
+				
 				doAction = doActionNormal;
 			}
 		

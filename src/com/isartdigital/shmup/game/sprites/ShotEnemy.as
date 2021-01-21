@@ -1,10 +1,12 @@
 package com.isartdigital.shmup.game.sprites
 {
 	import com.adobe.tvsdk.mediacore.events.PlaybackRateEvent;
+	import com.isartdigital.shmup.game.GameManager;
 	import com.isartdigital.shmup.game.layers.GameLayer;
 	import com.isartdigital.utils.Config;
 	import com.isartdigital.utils.game.CollisionManager;
 	import com.isartdigital.utils.game.StateObject;
+	import com.isartdigital.utils.sound.SoundManager;
 	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
 	import flash.geom.Point;
@@ -16,8 +18,12 @@ package com.isartdigital.shmup.game.sprites
 	public class ShotEnemy extends StateObject
 	{
 		public static var list:Vector.<ShotEnemy> = new Vector.<ShotEnemy>();
-		public var velocity:Point;
-		private var enemyShotCollider:MovieClip;
+		
+		protected var velocity:Point
+		
+		protected var enemyShotCollider:MovieClip;
+		
+		protected var targetEnemy:Enemy;
 		
 		public function ShotEnemy(pAsset:String, pVelocity:Point)
 		{
@@ -38,12 +44,12 @@ package com.isartdigital.shmup.game.sprites
 			var lYMax:Number = GameLayer.getInstance().screenLimits.bottom;
 			var lYMin:Number = GameLayer.getInstance().screenLimits.top;
 			
-			x += velocity.x;
-			y += velocity.y;
+			move();
 			
 			doCollision(Player.getInstance());
+			doCollision(GameManager.shield);
 			
-			for (var j:int = Obstacle.list.length -1  ; j > -1; j--) 
+			for (var j:int = Obstacle.list.length - 1; j > -1; j--)
 			{
 				doCollision(Obstacle.list[j]);
 			}
@@ -59,19 +65,27 @@ package com.isartdigital.shmup.game.sprites
 			if (CollisionManager.hasCollision(hitBox, pTarget.hitBox, hitPoints))
 			{
 				doAction = doExplosion;
-				if (!Player.invincible)
+				
+				if (pTarget is Player && !Player.getInstance().invincible && !Shield.shieldOn)
 				{
-					if (pTarget is Player)
-					{
-						pTarget.doAction = Player(pTarget).doActionHurt;
-					}
+					pTarget.doAction = Player(pTarget).doActionHurt;
 				}
 				
 				if (pTarget is Obstacle2)
 				{
 					pTarget.doAction = Obstacle2(pTarget).doExplosion;
 				}
+				
+				if (pTarget is Shield)
+				{
+					doExplosion();
+				}
 			}
+		}
+		
+		protected function move():void
+		{
+			
 		}
 		
 		override public function get hitPoints():Vector.<Point>
@@ -80,7 +94,7 @@ package com.isartdigital.shmup.game.sprites
 			var lPosition:Point;
 			var lChild:DisplayObject;
 			
-			for (var i:int = 0; i < 3; i++)
+			for (var i:int = 0; i < 1; i++)
 			{
 				lChild = enemyShotCollider.getChildByName("mcHitPoint" + i);
 				lPosition = enemyShotCollider.localToGlobal(new Point(lChild.x, lChild.y));
@@ -96,7 +110,9 @@ package com.isartdigital.shmup.game.sprites
 			
 			if (isAnimEnd())
 			{
+				visible = false;
 				destroy();
+				doAction = doActionVoid;
 			}
 		}
 		

@@ -2,6 +2,7 @@ package com.isartdigital.shmup.ui
 {
 	import com.isartdigital.shmup.controller.Controller;
 	import com.isartdigital.shmup.game.GameManager;
+	import com.isartdigital.utils.sound.SoundFX;
 	import com.isartdigital.utils.sound.SoundManager;
 	import com.isartdigital.utils.ui.Screen;
 	import flash.display.SimpleButton;
@@ -29,6 +30,8 @@ package com.isartdigital.shmup.ui
 		public var mcTouch:Sprite;
 		
 		protected var pad:GameInput;
+		
+		private var uiLoop : SoundFX;
 		
 		public function Help() 
 		{
@@ -63,9 +66,15 @@ package com.isartdigital.shmup.ui
 			}
 		}
 		
+		public function uiSoundPass(pSound : SoundFX):void 
+		{
+			uiLoop = pSound;
+		}
+		
 		protected function onClick (pEvent:MouseEvent) : void {
 			SoundManager.getNewSoundFX("click").start();
-			GameManager.start();
+			TutorialFeature.getInstance().uiSoundPass(uiLoop);
+			UIManager.addScreen(TutorialFeature.getInstance());			
 		}
 		
 		/**

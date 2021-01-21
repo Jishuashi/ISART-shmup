@@ -14,6 +14,7 @@ package com.isartdigital.shmup.game.sprites
 		public static var list:Vector.<ShotBoss> = new Vector.<ShotBoss>();
 		private var velocity:Point;
 		
+		
 		public function ShotBoss(pAsset:String, pVelocity:Point)
 		{
 			velocity = pVelocity;
@@ -61,7 +62,8 @@ package com.isartdigital.shmup.game.sprites
 		private function doCollision(pTarget:StateObject):void
 		{
 			doAction = doExplosion;
-			if (!Player.invincible)
+			
+			if (!Player.getInstance().invincible && !Shield.shieldOn)
 			{
 				if (pTarget is Player)
 				{

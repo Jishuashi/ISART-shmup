@@ -1,6 +1,8 @@
-package com.isartdigital.shmup.game.sprites 
+﻿package com.isartdigital.shmup.game.sprites 
 {
+	import com.isartdigital.shmup.game.GameManager;
 	import com.isartdigital.shmup.game.layers.GameLayer;
+	import com.isartdigital.shmup.ui.hud.Hud;
 	import com.isartdigital.utils.game.CollisionManager;
 	import com.isartdigital.utils.game.StateObject;
 	import flash.display.DisplayObject;
@@ -18,6 +20,7 @@ package com.isartdigital.shmup.game.sprites
 		private var specialCollider: MovieClip;
 		private var nbOfUse : int = 2;
 		private var duration : int = 0;
+		private var range : RangeAlly;
 		
 		public function Special(pAsset : String , pVelocity : Point) 
 		{
@@ -58,17 +61,29 @@ package com.isartdigital.shmup.game.sprites
 		{
 			if (CollisionManager.hasCollision(hitBox , pTarget.hitBox , hitPoints))
 			{
-				if (pTarget is Enemy0)
+				if (pTarget is Enemy0 && !Enemy(pTarget).allyModeOn && Hud.getInstance().mcTopLeft.mcSpecialBar.mcBar.x > Hud.getInstance().mcTopLeft.mcSpecialBar.mcBar.x - GameManager.fullBar + 50 )
 				{
 					pTarget.doAction = Enemy0(pTarget).setModeAlly;
-					Enemy.allyModeOn = true;
+					Enemy(pTarget).allyModeOn = true;
+					range = new RangeAlly();
+					pTarget.addChild(range);
+					
+					Hud.getInstance().mcTopLeft.mcSpecialBar.mcBar.x -= GameManager.fullBar / 2 + 25;
 				}
-				else if (pTarget is Enemy1)
+				else if (pTarget is Enemy1 && !Enemy(pTarget).allyModeOn && Hud.getInstance().mcTopLeft.mcSpecialBar.mcBar.x == 5)
 				{
 					pTarget.doAction = Enemy1(pTarget).setModeAlly;
-					Enemy.allyModeOn = true;
+					Enemy(pTarget).allyModeOn = true;
+					range = new RangeAlly();
+					pTarget.addChild(range);
+					
+					Hud.getInstance().mcTopLeft.mcSpecialBar.mcBar.x -= GameManager.fullBar + 50 ;
 				}
 				else if (pTarget is Enemy2)
+				{
+					destroy();
+				}
+				else 
 				{
 					destroy();
 				}

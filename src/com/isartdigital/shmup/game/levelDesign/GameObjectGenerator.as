@@ -23,7 +23,7 @@ package com.isartdigital.shmup.game.levelDesign
 		 * l'idéal serait quelques centaines de pixels avant le bord droit de l'écran
 		 */
 		public function generate (): void {
-			trace ("GENERATE", getQualifiedClassName(this));
+			//trace ("GENERATE", getQualifiedClassName(this));
 			destroy();
 		}
 		

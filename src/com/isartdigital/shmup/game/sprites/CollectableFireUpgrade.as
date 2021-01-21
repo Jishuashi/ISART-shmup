@@ -1,5 +1,6 @@
 package com.isartdigital.shmup.game.sprites 
 {
+	import com.isartdigital.shmup.game.levelDesign.CollectableGenerator;
 	/**
 	 * ...
 	 * @author Hugo CHARTIER
@@ -17,6 +18,11 @@ package com.isartdigital.shmup.game.sprites
 			Player.getInstance().weaponLevel += 1;
 		}
 		
+		override public function destroy():void 
+		{
+			CollectableGenerator.listOfCollectablesGenerate.removeAt(CollectableGenerator.listOfCollectablesGenerate.indexOf(this));
+			super.destroy();
+		}
 	}
 
 }

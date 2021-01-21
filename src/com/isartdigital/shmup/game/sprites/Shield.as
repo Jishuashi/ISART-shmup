@@ -1,4 +1,4 @@
-package com.isartdigital.shmup.game.sprites 
+package com.isartdigital.shmup.game.sprites
 {
 	import com.isartdigital.utils.game.StateObject;
 	
@@ -6,32 +6,45 @@ package com.isartdigital.shmup.game.sprites
 	 * ...
 	 * @author Hugo CHARTIER
 	 */
-	public class Shield extends StateObject 
+	public class Shield extends StateObject
 	{
-		public function Shield(pAsset :String) 
+		
+		private var counterFrame:int = 0;
+		private var waitingTime:int = 250;
+		public static var shieldOn : Boolean = false;
+		
+		public function Shield(pAsset : String)
 		{
 			assetName = pAsset;
 			super();
 		}
-		override protected function doActionNormal():void 
+		
+		override protected function doActionNormal():void
 		{
 			super.doActionNormal();
 			
+			x = Player.getInstance().x;
+			y = Player.getInstance().y;
 			
-			
+			if (counterFrame++ >= waitingTime)
+			{
+				doAction = doExplosion;
+			}
+		
 		}
 		
-		public function doExplosion():void 
+		public function doExplosion():void
 		{
 			setState("explosion")
 			
-			if(isAnimEnd())
+			if (isAnimEnd())
 			{
-				trace ("")
-				setState("default")
+				counterFrame = 0;
+				shieldOn = false;
 				destroy();
+				
 			}
 		}
-
+	
 	}
 }

@@ -102,6 +102,50 @@
 				<source>RESUME</source>
 				<target>REPRENDRE</target>
 			</trans-unit>
+			<trans-unit id="26">
+				<source>CREDITS</source>
+				<target>CRÉDITS</target>
+			</trans-unit>
+			<trans-unit id="27">
+				<source>SPECIAL</source>
+				<target>SPÉCIAL</target>
+			</trans-unit>
+			<trans-unit id="28">
+				<source>BOMBS</source>
+				<target>BOMBES</target>
+			</trans-unit>
+			<trans-unit id="29">
+				<source>LIVES</source>
+				<target>VIES</target>
+			</trans-unit>
+			<trans-unit id="30">
+				<source>Artists</source>
+				<target>Artistes</target>
+			</trans-unit>
+			<trans-unit id="31">
+				<source>TUTORIAL FEATURE</source>
+				<target>TUTORIEL SPÉCIAL</target>
+			</trans-unit>
+			<trans-unit id="32">
+				<source>Obstacle that can be destroyed</source>
+				<target>Obstacle pouvant être détruit</target>
+			</trans-unit>
+			<trans-unit id="33">
+				<source>Enemy that can be converted</source>
+				<target>Ennemis pouvant être convertit</target>
+			</trans-unit>
+			<trans-unit id="34">
+				<source>The player shoots a logic bomb</source>
+				<target>Le player tir une bomb logique</target>
+			</trans-unit>
+			<trans-unit id="35">
+				<source>When the logic bomb hits an enemy he becomes an ally</source>
+				<target>Quand la bombe logique touche un ennemi il devient un allier</target>
+			</trans-unit>
+			<trans-unit id="36">
+				<source>It can shoot enemies and destroy some obstacles</source>
+				<target>Il peux détruire les ennemis et certain obstacles</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

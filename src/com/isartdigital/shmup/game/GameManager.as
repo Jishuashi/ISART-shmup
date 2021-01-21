@@ -7,6 +7,7 @@
 	import com.isartdigital.shmup.game.layers.GameLayer;
 	import com.isartdigital.shmup.game.layers.InfiniteLayer;
 	import com.isartdigital.shmup.game.layers.ScrollingLayer;
+	import com.isartdigital.shmup.game.levelDesign.CollectableGenerator;
 	import com.isartdigital.shmup.game.levelDesign.EnemyGenerator;
 	import com.isartdigital.shmup.game.sprites.Bomb;
 	import com.isartdigital.shmup.game.sprites.Boss;
@@ -19,10 +20,13 @@
 	import com.isartdigital.shmup.game.sprites.Enemy;
 	import com.isartdigital.shmup.game.sprites.Obstacle;
 	import com.isartdigital.shmup.game.sprites.Player;
+	import com.isartdigital.shmup.game.sprites.Shield;
+	import com.isartdigital.shmup.game.sprites.ShotAlly;
 	import com.isartdigital.shmup.game.sprites.ShotBoss;
 	import com.isartdigital.shmup.game.sprites.ShotEnemy;
 	import com.isartdigital.shmup.game.sprites.ShotPlayer;
 	import com.isartdigital.shmup.ui.GameOver;
+	import com.isartdigital.shmup.ui.PauseScreen;
 	import com.isartdigital.shmup.ui.UIManager;
 	import com.isartdigital.shmup.ui.WinScreen;
 	import com.isartdigital.shmup.ui.hud.Hud;
@@ -31,11 +35,15 @@
 	import com.isartdigital.utils.game.GameObject;
     import com.isartdigital.utils.game.GameStage;
 	import com.isartdigital.utils.game.StateObject;
+	import com.isartdigital.utils.sound.SoundFX;
+	import com.isartdigital.utils.sound.SoundManager;
 	import flash.display.MovieClip;
     import flash.display.Sprite;
+	import flash.display.StageQuality;
 	import flash.events.Event;
 	import flash.events.SampleDataEvent;
     import flash.geom.Point;
+	import flash.media.Sound;
 	import flash.utils.getDefinitionByName;
 	
 	/**
@@ -48,10 +56,22 @@
 		 * jeu en pause ou non
 		 */
 		protected static var isPause:Boolean = true;
+		public static var fullBar : int = 235;
 		public static var background1: InfiniteLayer;
 		public static var background2: InfiniteLayer;
 		public static var foreground: InfiniteLayer;	
 		public static var playerInstance: Player;
+		public static var shield: Shield = new Shield("Shield");
+		public static var bossSpawn : Boolean = false;
+		public static var ambienceSound : SoundFX;
+		public static var levelSound : SoundFX;
+		
+		public static var boss0Loop : SoundFX = SoundManager.getNewSoundFX("bossLoop0");
+		public static var boss1Loop : SoundFX =	SoundManager.getNewSoundFX("bossLoop1");
+		public static var boss2Loop : SoundFX =	SoundManager.getNewSoundFX("bossLoop2");
+		
+		
+		public static var isCredits : Boolean = false;
 		
 		/**
 		 * controlleur
@@ -80,7 +100,9 @@
 			Monitor.getInstance().addButton("Win", cheatWin);
 			Monitor.getInstance().addButton("Colliders", cheatCollider);
 			Monitor.getInstance().addButton("Renderers", cheatRenderer);
-
+			
+			Monitor.getInstance().visible = false;
+			
 			UIManager.startGame();
 			
 			// TODO: votre code d'initialisation commence ici
@@ -114,23 +136,32 @@
 			
 			Collectable.list.push(new CollectableLife("CollectableLife"));
 			Collectable.list.push(new CollectableBomb("CollectableBomb"));
-			Collectable.list.push(new CollectableFirePower("CollectableFirePower"));
-			Collectable.list.push(new CollectableFireUpgrade("CollectableFireUpgrade"));
-			Collectable.list.push(new CollectableFireUpgrade("CollectableFireUpgrade"));
+			Collectable.list.push(new CollectableShield("CollectableShield"));
 			
+			Hud.getInstance().mcTopLeft.mcSpecialBar.mcBar.x += fullBar;
 			
 			for (var i:int = 0; i < Collectable.list.length; i++) 
 			{
 				Collectable.list[i].start();
 			}
 			
+			Config.stage.quality = StageQuality.MEDIUM;
+			
             Player.getInstance().start();
+			shield.start();
 			GameLayer.getInstance().start();
 			background1.start();
 			background2.start();
 			foreground.start();	
 			
+			ambienceSound = SoundManager.getNewSoundFX("ambienceLoop");
+			levelSound = SoundManager.getNewSoundFX("levelLoop");
             
+			PauseScreen.getInstance().soundPass(levelSound , ambienceSound);
+			
+			ambienceSound.loop();
+			levelSound.loop();
+			
 			resume();
 		}
 		
@@ -175,6 +206,8 @@
 			background2.doAction();
 			foreground.doAction();
 			
+			//trace("------------------------");
+			
 			Player.getInstance().doAction();
 			GameLayer.getInstance().doAction();
 			
@@ -206,6 +239,11 @@
 				Collectable.list[k].doAction();
 			}
 			
+			for (var m:int = 0; m < CollectableGenerator.listOfCollectablesGenerate.length ;  m++) 
+			{
+				CollectableGenerator.listOfCollectablesGenerate[m].doAction();
+			}
+			
 			for (var l:int = 0; l  < ShotBoss.list.length ; l++) 
 			{
 				ShotBoss.list[l].doAction();
@@ -213,11 +251,24 @@
 			
 			Bomb.bomb.doAction();
 			
-			for (var m:int = 0; m < Boss.listOfPhase.length ; m++) 
+			for (var n:int = 0; n < ShotAlly.list.length ; n++) 
 			{
-				Boss.listOfPhase[m].doAction();
+				ShotAlly.list[n].doAction();
 			}
 			
+		
+			if (controller.pause && !isPause)
+			{
+				pause();
+			}
+			else if (controller.pause && isPause)
+			{
+				resume();
+			}
+			
+			
+			
+			shield.doAction();
 			
 			if (playerInstance.special != null) playerInstance.special.doAction();
 			
@@ -226,8 +277,52 @@
 
 		public static function gameOver ():void {
 			pause();
+			
+			destroyAllGameObject();
+			
+			
+			SoundManager.getNewSoundFX("gameoverJingle").start();
+			ambienceSound.stop();
+			levelSound.stop();
+			
+			GameOver.getInstance().txtScore.text = "Score :" + Hud.getInstance().totalScore;
+			
+			UIManager.addScreen(GameOver.getInstance());
+		}
+		
+		public static function win():void {
+			pause();
 			GameStage.getInstance().getHudContainer().removeChild(Hud.getInstance());
 			GameStage.getInstance().getGameContainer().removeChild(GameLayer.getInstance());
+			
+			destroyAllGameObjectOnWin();
+			
+			WinScreen.getInstance().txtScore.text = "Score :" + Hud.getInstance().totalScore;
+			
+			UIManager.addScreen(WinScreen.getInstance());
+		}
+		
+		public static function pause (): void {
+			if (!isPause) {
+				isPause = true;
+				Config.stage.removeEventListener (Event.ENTER_FRAME, gameLoop);
+			}
+			
+			Hud.getInstance().visible = false;
+			
+			UIManager.addScreen(PauseScreen.getInstance());
+		}
+		
+		
+		public static function destroyAllGameObject():void
+		{
+			Hud.getInstance().destroy();
+			GameLayer.getInstance().destroy();
+			background2.destroy();
+			background1.destroy();
+			foreground.destroy();
+			
+			Player.getInstance().destroy();
 			
 			for (var i:int = ShotPlayer.list.length -1; i > -1; i--) 
 			{
@@ -240,30 +335,58 @@
 			}
 			
 			
-			GameOver.getInstance().txtScore.text = "Score :" + Hud.getInstance().totalScore;
-			
-			UIManager.addScreen(GameOver.getInstance());
-		}
-		
-		public static function win():void {
-			pause();
-			GameStage.getInstance().getHudContainer().removeChild(Hud.getInstance());
-			GameStage.getInstance().getGameContainer().removeChild(GameLayer.getInstance());
-			
-			UIManager.addScreen(WinScreen.getInstance());
-		}
-		
-		public static function pause (): void {
-			if (!isPause) {
-				isPause = true;
-				Config.stage.removeEventListener (Event.ENTER_FRAME, gameLoop);
+			for (var k:int = Enemy.list.length -1 ; k > -1; k--) 
+			{
+				Enemy.list[k].destroy();
 			}
+						
+			for (var l:int = ShotBoss.list.length -1 ; l > -1; l--) 
+			{
+				ShotBoss.list[l].destroy();
+			}	
+			
+			
+		}
+		
+		public static function destroyAllGameObjectOnWin():void
+		{
+			background2.destroy();
+			background1.destroy();
+			foreground.destroy();
+			
+			Player.getInstance().destroy();
+			
+			for (var i:int = ShotPlayer.list.length -1; i > -1; i--) 
+			{
+				ShotPlayer.list[i].destroy();
+			}
+			
+			for (var j:int = ShotEnemy.list.length -1 ; j > -1 ; j--) 
+			{
+				ShotEnemy.list[j].destroy();
+			}
+			
+			
+			for (var k:int = Enemy.list.length -1 ; k > -1; k--) 
+			{
+				Enemy.list[k].destroy();
+			}
+						
+			for (var l:int = ShotBoss.list.length -1 ; l > -1; l--) 
+			{
+				ShotBoss.list[l].destroy();
+			}	
+			
+			
 		}
 		
 		public static function resume (): void {
 			// donne le focus au stage pour capter les evenements de clavier
 			Config.stage.focus = Config.stage;
             
+			UIManager.closeScreens();
+			Hud.getInstance().visible = true;
+			
 			if (isPause) {
 				isPause = false;
 				Config.stage.addEventListener (Event.ENTER_FRAME, gameLoop);

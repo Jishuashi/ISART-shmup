@@ -32,9 +32,7 @@ package com.isartdigital.shmup.game.layers
 				children.push(getChildAt(i));
 			}
 			
-			children.sort(compareByPosition);
-			trace(children);
-			
+			children.sort(compareByPosition);			
 		}
 		
 		public function init(pRatio : Number , pTarget : DisplayObject):void 

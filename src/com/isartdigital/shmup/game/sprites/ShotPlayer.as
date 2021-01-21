@@ -40,8 +40,8 @@ package com.isartdigital.shmup.game.sprites
 			var lYMax:Number = GameLayer.getInstance().screenLimits.bottom;
 			var lYMin:Number = GameLayer.getInstance().screenLimits.top;
 			
-			x += velocity.x;
-			y += velocity.y;
+			
+			move();
 			
 			for (var i:int = Enemy.list.length - 1; i > -1; i--)
 			{
@@ -53,10 +53,7 @@ package com.isartdigital.shmup.game.sprites
 				doCollision(Obstacle.list[j]);
 			}
 			
-			for (var k:int = Boss.listOfPhase.length -1 ; k > -1 ; k--) 
-			{
-				doCollision(Boss.listOfPhase[k])
-			}
+			
 			
 			if (x < lXMin || x > lXMax || y < lYMin || y > lYMax)
 			{
@@ -68,23 +65,31 @@ package com.isartdigital.shmup.game.sprites
 		{
 			if (CollisionManager.hasCollision(hitBox, pTarget.hitBox , hitPoints))
 			{
-				if (pTarget is Enemy && !Enemy.allyModeOn)
+				if (pTarget is Enemy && !Enemy(pTarget).allyModeOn)
 				{
 					Enemy(pTarget).doDestroy();
+					doAction = doExplosion;
 				}
 				
-				if (pTarget is Obstacle2)
+				if (pTarget is Obstacle1 || pTarget is Obstacle0 )
 				{
-					pTarget.doAction = Obstacle2(pTarget).doExplosion;
+					doAction = doExplosion;
 				}
 				
-				if (pTarget is Boss)
+				if (pTarget is Boss && !Boss.changePhase)
 				{
-					pTarget.doAction = Boss(pTarget).doActionHurtBoss;
+					
+					if (Boss(pTarget).life > 0) pTarget.doAction = Boss(pTarget).doActionHurtBoss;
+					doAction = doExplosion;
 				}
 				
-				doAction = doExplosion;
+				
 			}
+		}
+		
+		protected function move():void 
+		{
+			
 		}
 		
 		public function doExplosion():void
@@ -93,7 +98,9 @@ package com.isartdigital.shmup.game.sprites
 			
 			if (isAnimEnd())
 			{
+				visible = false;
 				destroy();
+				doAction = doActionVoid;
 			}
 		}
 		

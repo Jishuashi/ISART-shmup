@@ -6,6 +6,8 @@ package com.isartdigital.shmup.game.sprites
 	 */
 	public class Obstacle2 extends Obstacle 
 	{
+	
+		public var onDestroy :Boolean = false;
 		
 		public function Obstacle2(pAsset:String) 
 		{
@@ -18,9 +20,14 @@ package com.isartdigital.shmup.game.sprites
 		{
 			setState("explosion")
 			
+			
 			if(isAnimEnd())
 			{
+				
+				onDestroy = true;
+				
 				destroy();
+				doAction = doActionVoid;
 			}
 		}
 		

@@ -1,12 +1,16 @@
 package com.isartdigital.shmup.ui.hud 
 {
 	import com.isartdigital.shmup.controller.Controller;
+	import com.isartdigital.shmup.game.GameManager;
 	import com.isartdigital.shmup.ui.UIManager;
 	import com.isartdigital.utils.Config;
+	import com.isartdigital.utils.sound.SoundManager;
 	import com.isartdigital.utils.ui.Screen;
 	import com.isartdigital.utils.ui.UIPosition;
 	import flash.display.MovieClip;
+	import flash.display.SimpleButton;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	
 	/**
@@ -28,6 +32,7 @@ package com.isartdigital.shmup.ui.hud
 		
 		public var score:TextField;
 		public var totalScore: int = 0;
+		public var btnPause: SimpleButton;
 	
 		public function Hud() 
 		{
@@ -37,11 +42,22 @@ package com.isartdigital.shmup.ui.hud
 			
 			score.text = "Score :" + totalScore;
 			
+			mcTopRight.btnPause.addEventListener(MouseEvent.CLICK , pauseButton);
+			
 			if (!Config.debug && Controller.type != Controller.TOUCH) {
 				removeChild(mcBottomRight);
 				mcBottomRight = null;
 			}
 		}
+		
+		
+		public function pauseButton(pEvent : MouseEvent):void 
+		{
+			SoundManager.getNewSoundFX("click").start();
+			GameManager.pause();
+		}
+		
+		
 		
 		/**
 		 * Retourne l'instance unique de la classe, et la crée si elle n'existait pas au préalable
@@ -64,6 +80,7 @@ package com.isartdigital.shmup.ui.hud
 		 */
 		override public function destroy (): void {
 			instance = null;
+			//Config.stage.removeEventListener(MouseEvent.CLICK , pauseButton);
 			super.destroy();
 		}
 

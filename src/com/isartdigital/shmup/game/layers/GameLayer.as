@@ -22,7 +22,7 @@ package com.isartdigital.shmup.game.layers
 		protected var ennemiesGenerator:EnemyGenerator = new EnemyGenerator;
 	
 		
-		private var _speed:int = -5;
+		private var _speed:int = -8;
 		
 		public function get speed():int
 		{
@@ -34,7 +34,6 @@ package com.isartdigital.shmup.game.layers
 			super();
 		}
 		
-		public var lCountCoucou : int = 0;
 		
 		override protected function doActionNormal():void
 		{
@@ -46,7 +45,7 @@ package com.isartdigital.shmup.game.layers
 			
 			if (children.length != 0)
 			{
-				if (children[0].x > screenLimits.right && children[0].x < screenLimits.right + 10 ) 
+				if (children[0].x < screenLimits.right + 200 ) 
 				{
 					GameObjectGenerator(children[0]).generate();
 					children.shift();

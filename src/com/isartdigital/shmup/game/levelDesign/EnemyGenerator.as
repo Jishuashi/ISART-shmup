@@ -1,6 +1,7 @@
 ﻿package com.isartdigital.shmup.game.levelDesign
 {
 	
+	import com.isartdigital.shmup.game.GameManager;
 	import com.isartdigital.shmup.game.layers.GameLayer;
 	import com.isartdigital.shmup.game.sprites.Boss;
 	import com.isartdigital.shmup.game.sprites.Enemy;
@@ -16,7 +17,7 @@
 	 */
 	public class EnemyGenerator extends GameObjectGenerator
 	{
-		private var indexBoss : int = 0;
+		private var indexBoss:int = 0;
 		private var enemy:Enemy;
 		public var enemyType:String;
 		
@@ -32,8 +33,6 @@
 			if (GameLayer.getInstance().children.length > 1)
 			{
 				enemyType = "Enemy" + lNum;
-				
-				trace(enemyType)
 				
 				switch (lNum)
 				{
@@ -52,30 +51,28 @@
 				default: 
 					trace("Error");
 					break;
-				}
-				
-				Enemy.list.push(enemy);
-				
+				}				
 			}
 			else
 			{
-				Boss.listOfPhase.push(new Boss("Boss0"));
-				Boss.listOfPhase.push(new Boss("Boss1"));
-				Boss.listOfPhase.push(new Boss("Boss2"));
+				GameManager.ambienceSound.fadeOut();
+				GameManager.levelSound.fadeOut();
 				
-				enemy = Boss.listOfPhase[0];
-				enemy.start();	
+				GameManager.boss0Loop.fadeIn();
+				
+				enemy = new Boss("Boss0"); 
+				
+				GameManager.bossSpawn = true;
+				
+				enemy.start();				
 			}
-			
-			
 			
 			enemy.x = x;
 			enemy.y = y;
 			
 			enemy.cacheAsBitmap = true;
 			
-			parent.addChild(enemy);
-			
+			GameLayer.getInstance().addChild(enemy);
 			
 			super.generate();
 		}

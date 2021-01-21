@@ -26,6 +26,7 @@ package com.isartdigital.shmup.game.levelDesign
 		override public function generate():void
 		{
 			var lNum:String = getQualifiedClassName(this).substr( -1);
+			
 			var lObstacle:Obstacle;
 			
 			var obstacleType = "Obstacle" + lNum;
